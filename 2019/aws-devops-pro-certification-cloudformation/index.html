@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: CloudFormation</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: CloudFormation</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">May 27, 2019 - Reading time: 14 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>CloudFormation is a templating language that can be expressed as JSON or YAML. This is one tool that falls under the Infrastructure as Code (IaC) category for this domain.</p>
+<p>The core concepts you need to be aware of are:</p>
+<ul>
+<li>Stack - an instantiation of a template</li>
+<li>A template consist of the following core elements
+<ul>
+<li><code>Parameters</code> - User configuration options</li>
+<li><code>Mapping</code> - Hashes (array of key/value pairs), allows you to apply logic i.e. choose the correct AMI based on region.</li>
+<li><code>Resources</code> - The <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html">resources</a> we'll use CloudFormation to provision. At the time of writing there 89 services that are directly accessible through CloudFormation, later we'll see how to use services that aren't via Custom Resources.</li>
+<li><code>Output</code> - Results from the template, usually fed into another template as <code>Parameters</code>.</li>
+<li>Other elements to be aware of
+<ul>
+<li>Format Version - identifies the capabilities of the template</li>
+<li>Description - self-explanatory</li>
+<li>Metadata - provides information about the template</li>
+<li>Conditions - commonly used to define if a resource is created i.e. create this resource if the environment type is production</li>
+<li>Transform - allows you to execute macros that are either template snippets (<code>AWS::Include</code>) or serverless (aka Lambda - <code>AWS:Serverless</code>).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Stack Policies - IAM style policy statement which governs what can be changed and who can change it</li>
+<li>Programmability
+<ul>
+<li>Intrinsic functions - helper functions.</li>
+<li>Custom Resources</li>
+<li><code>Transform</code> section in a template</li>
+</ul>
+</li>
+</ul>
+<h3>Intrinsic functions (helpers)</h3>
+<table><thead><tr><th> Function        </th><th> Usecases                                      </th></tr></thead><tbody>
+<tr><td> Fn::Base64      </td><td> UserData of EC2 instances                     </td></tr>
+<tr><td> Fn::Cidr        </td><td> <a href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing">CIDR</a> address blocks / Networking </td></tr>
+<tr><td> Fn::FindInMap   </td><td> Lookups of values i.e. AMIs by region         </td></tr>
+<tr><td> Fn::GetAtt      </td><td> Cross referencing templates (including self)  </td></tr>
+<tr><td> Fn::GetAZs      </td><td> Networking / Subnets                          </td></tr>
+<tr><td> Fn::ImportValue </td><td> Cross referencing templates (including self)  </td></tr>
+<tr><td> Fn::Join        </td><td> Merges an array into a string                 </td></tr>
+<tr><td> Fn::Select      </td><td> Picking a value from an array                 </td></tr>
+<tr><td> Fn::Split       </td><td> Turns a string into an array                  </td></tr>
+<tr><td> Fn::Sub         </td><td> Substituting one value for another            </td></tr>
+<tr><td> Fn::Transform   </td><td> Calling CloudFormation Macros                 </td></tr>
+<tr><td> Ref             </td><td> Cross referencing templates (including self)  </td></tr>
+<tr><td> Fn::And         </td><td> Conditional operation                         </td></tr>
+<tr><td> Fn::Or          </td><td> Conditional operation                         </td></tr>
+<tr><td> Fn::Equals      </td><td> Conditional function                          </td></tr>
+<tr><td> Fn::If          </td><td> Conditional function                          </td></tr>
+<tr><td> Fn::Not         </td><td> Conditional function                          </td></tr>
+</tbody></table>
+<h3>Resource Attributes</h3>
+<ul>
+<li><a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html">CreationPolicy</a>, requires a signal to be sent by the resource or a timeout occurs</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">CreationPolicy</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">ResourceSignal</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">Count</span><span style="background-color:#2b303b;color:#c0c5ce;">: &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">3</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#65737e;"># 3 instances have been created, so 3 signals will need to be generated before fulfilling the CreationPolicy requirements
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">Timeout</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">PT15M
+</span></pre>
+<p><code>Timeout</code> value is <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">ISO8601 durations format</a>: <code>PT#H#M#S</code> where <code>#</code> is the number of hours, minutes and seconds. Give the instances as long as possible, if the timeout is too short you will trigger rollbacks. <code>PT15M</code> is a timeout of 15 minutes</p>
+<p>To send a signal, you need to install help script called <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html"><code>cfn-signal</code></a> on the resources (usually done in the User Data area of EC2 instances).</p>
+<ul>
+<li>DeletionPolicy - define what happens to a resource when the stack is deleted. Possible values are:
+<ul>
+<li>Delete - default</li>
+<li>Retain</li>
+<li>Snapshot - only available to EBS, RDS and RedShift. Storage costs for storing the snapshot.</li>
+</ul>
+</li>
+<li>DependsOn - has no guarantees that the process will have completed successfully</li>
+<li>UpdatePolicy - defines what happens to resource when the stack is updated.</li>
+<li>UpdateReplacePolicy - use this retain / backup a physical instance of a resource it is replaced during a stack update.</li>
+</ul>
+<p>Know when to use the <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-waitcondition.html">Wait condition</a> over a CreationPolicy.</p>
+<h3>Pseudo Parameters</h3>
+<p>Are predefined parameters that return a valued on the current context i.e. current account or region in use.</p>
+<table><thead><tr><th> Parameter             </th><th> Returns                                                                                             </th></tr></thead><tbody>
+<tr><td> AWS::AccountId        </td><td> The account ID                                                                                      </td></tr>
+<tr><td> AWS::NotificationARNs </td><td> A list of notification ARNs for a stack                                                             </td></tr>
+<tr><td> AWS::NoValue          </td><td> Removes the corresponding resource when specified using <code>Fn::If</code>                                    </td></tr>
+<tr><td> AWS::Partition        </td><td> The partition a resource is in, only relevant to specialist regions like China and US Government </td></tr>
+<tr><td> AWS::Region           </td><td> The current region                                                                                  </td></tr>
+<tr><td> AWS::StackId          </td><td> The ID of the stack currently created                                                               </td></tr>
+<tr><td> AWS::StackName        </td><td> The Name of the stack currently created                                                             </td></tr>
+<tr><td> AWS::URLSuffix        </td><td> The suffix for a domain typically amazonaws.com, but may vary for specialized regions               </td></tr>
+</tbody></table>
+<h3>Nested stacks</h3>
+<ul>
+<li>A stack contains resources: S3 bucket, EC2 instances and other AWS services</li>
+<li>A stack can also contain another stack as a resource.</li>
+<li>Allow a complex infrastructure to be split up into manageable templates.</li>
+<li>Allows you to get around Stack limits (200/60/60 resources/outputs/parameters)</li>
+</ul>
+<h3>Stack updates</h3>
+<p>Stack Policy is JSON only.</p>
+<ul>
+<li>The general rule is to allow everything, but deny specific resources</li>
+<li>The absence of stack policy means all updates are permitted</li>
+<li>Once applied it can't be deleted</li>
+<li>Once applied all objects are protected by default and updates are denied</li>
+</ul>
+<h3>Custom Resources</h3>
+<p>Custom Resources are a way to provision and track resources that are not supported directly through CloudFormation.</p>
+<p>The request/response mechanism is either an SNS topic or Lambda backed <a href="https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html">ARN</a>.</p>
+<p>AWS has a [walk through][docs_custom_resource] that demonstrates how to create a custom resource to perform an AMI lookup (using Lambda) to provide the correct AMI for a given region (in this case the region where we create the stack) and CPU type.</p>
+<p>Before custom resources, you would've had to keep a static list of AMIs in the Mappings section of a template.</p>
+<h2>Why?</h2>
+<p>This allows you to define your infrastructure as code, rather than manual steps carried out via various UIs (Console and CLI)</p>
+<h2>When?</h2>
+<ul>
+<li>Deploying infrastructure in a systematic and repeatable fashion rather than doing it manually.</li>
+<li>Repeat pattern environment i.e. You host WordPress business and you have a template that deploys a web server and database to each new customer.</li>
+<li>If you are using an automated CI/CD environment, but want to expand to a Blue/Green (Red/Black) and create a mirror of your environment to allow for zero downtime.</li>
+<li>Create an environment in any region of the AWS cloud without manual reconfiguration i.e. AMI selection or subnet allocation.</li>
+<li>You want to track change to your environment, by using CloudFormation templates these can be stored in a version control system i.e. Git</li>
+</ul>
+<h2>How?</h2>
+<p>Here's a very basic example of CloudFormation, we'll use it to create an S3 bucket.</p>
+<p>The CloudFormation template: <code>hello-bucket.yaml</code>.</p>
+<p>N.B. To keep things terse, I've decided to only use YAML as the template format. CloudFormation can use JSON (in fact this was the original format, so you will still find a lot of examples in this format).</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">Resources</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">HelloBucket</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">Type</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">AWS::S3::Bucket
+</span></pre>
+<p><code>HelloBucket</code> is the logical name of our <code>resource</code>, and the type we've gone for is an S3 bucket.</p>
+<p>Let's use the CLI to create the stack based on this template.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> cloudformation create-stack \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--stack-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> hellostack \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--template-body </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">file:///path/to/hello-bucket.yaml 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#8fa1b3;">: </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">arn:aws:cloudformation:eu-west-3:xxx:stack/hellostack/4a3b0220-7552-11e9-acf0-0a230f532f04</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}  
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> cloudformation describe-stacks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Stacks</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#8fa1b3;">: </span><span style="background-color:#2b303b;color:#b48ead;">[
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">arn:aws:cloudformation:eu-west-3:xxx:stack/hellostack/4a3b0220-7552-11e9-acf0-0a230f532f04</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackName</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">hellostack</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">CreationTime</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2019-05-13T07:39:50.524Z</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">RollbackConfiguration</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: {},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackStatus</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">CREATE_COMPLETE</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">DisableRollback</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: false,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">NotificationARNs</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: </span><span style="background-color:#2b303b;color:#b48ead;">[</span><span style="background-color:#2b303b;color:#c0c5ce;">],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Tags</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: </span><span style="background-color:#2b303b;color:#b48ead;">[</span><span style="background-color:#2b303b;color:#c0c5ce;">],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">DriftInformation</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackDriftStatus</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">NOT_CHECKED</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Let's check on the status of stack creation.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> cloudformation describe-stack-resources</span><span style="background-color:#2b303b;color:#bf616a;"> --stack-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> hellostack
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackResources</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#8fa1b3;">: </span><span style="background-color:#2b303b;color:#b48ead;">[
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackName</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">hellostack</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">arn:aws:cloudformation:eu-west-3:xxx:stack/hellostack/4a3b0220-7552-11e9-acf0-0a230f532f04</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">LogicalResourceId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">HelloBucket</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">PhysicalResourceId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">hellostack-hellobucket-1ux8azkoq7t0t</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">ResourceType</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">AWS::S3::Bucket</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Timestamp</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2019-05-13T07:40:15.289Z</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">ResourceStatus</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">CREATE_COMPLETE</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">DriftInformation</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">StackResourceDriftStatus</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">NOT_CHECKED</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Useful fields:</p>
+<ul>
+<li><code>StackName</code> - this is the logic name of Stack (which we defined when using the <code>create-stack</code> sub command in the CLI)</li>
+<li><code>PhysicalResourceId</code> - this is the bucket name, note the default naming convention: <code>&lt;Stack Name&gt;-&lt;Logical Name of Resource in the Template&gt;-&lt;Random Hex String&gt;</code></li>
+<li><code>ResourceStatus</code> - This tells us if the resource creation was successful.</li>
+</ul>
+<p>We can verify the name of the bucket by using the <code>s3api</code> command:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> s3api list-buckets | </span><span style="background-color:#2b303b;color:#8fa1b3;">jq </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">.Buckets[] | select(.Name | contains(&quot;hellostack&quot;))</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Name</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#8fa1b3;">: </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">hellostack-hellobucket-1ux8azkoq7t0t</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">CreationDate</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#8fa1b3;">: </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2019-05-13T07:39:55.000Z</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Finally let's tear down, and verify the bucket has been deleted.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> cloudformation delete-stack</span><span style="background-color:#2b303b;color:#bf616a;"> --stack-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> hellostack
+</span><span style="background-color:#2b303b;color:#65737e;"># no output
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> s3api list-buckets | </span><span style="background-color:#2b303b;color:#8fa1b3;">jq </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">.Buckets[] | select(.Name | contains(&quot;hellostack&quot;))</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#65737e;"># no output
+</span></pre>
+<h2>API and CLI features and verbs</h2>
+<p><strong>Features</strong></p>
+<ul>
+<li>Stacks [Drift/Events/Policy/Resource(s)Drift(s)]
+<ul>
+<li>Template</li>
+<li>Imports/Exports</li>
+</ul>
+</li>
+<li>Change sets</li>
+<li>Stack sets
+<ul>
+<li>Instance(s)</li>
+<li>Set</li>
+<li>SetOperation
+<ul>
+<li>SetOperationResults</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>**Verbs (CRUD) **</p>
+<ul>
+<li>
+<p>Stacks</p>
+<ul>
+<li>Create</li>
+<li>List/Describe (stacks)</li>
+<li>Set/Update/Put</li>
+<li>Delete</li>
+</ul>
+</li>
+<li>
+<p>Change sets</p>
+<ul>
+<li>Create</li>
+<li>List/Describe</li>
+<li>Set/Update/Put</li>
+<li>Delete</li>
+</ul>
+</li>
+<li>
+<p>Stack sets</p>
+<ul>
+<li>Create</li>
+<li>List/Describe</li>
+<li>Set/Update/Put</li>
+<li>Delete</li>
+</ul>
+</li>
+</ul>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>
+<p>Stacks</p>
+<ul>
+<li>CancelUpdateStack</li>
+<li>ContinueUpdateRollback</li>
+<li>DescribeStackDriftDetectionStatus</li>
+<li>EstimateTemplateCost</li>
+<li>GetTemplateSummary</li>
+<li>UpdateTerminationProtection</li>
+<li>ValidateTemplate</li>
+</ul>
+</li>
+<li>
+<p>Change sets</p>
+<ul>
+<li>ExecuteChangeSet</li>
+</ul>
+</li>
+<li>
+<p>Stack sets</p>
+<ul>
+<li>StopStackSetOperation</li>
+</ul>
+</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a>
+<ul>
+<li>CloudFormation</li>
+<li><a href="/2019/aws-devops-pro-certification-elastic-beanstalk">Elastic Beanstalk</a></li>
+<li><a href="/2019/aws-devops-pro-certification-opsworks">OpsWorks</a></li>
+<li><a href="/2019/aws-devops-pro-certification-lambda/">AWS Lambda</a></li>
+<li><a href="/2019/aws-devops-pro-certification-ecs/">AWS ECS</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Config</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Managed Services</a></li>
+</ul>
+</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

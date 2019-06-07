@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Gatsby and WordPress: Creating Content</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Gatsby and WordPress: Creating Content</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jan 02, 2019 - Reading time: 10 minutes.</time><br />
+      
+      <h2>Pulling in content from WordPress</h2>
+<p>Now that we’ve verified that the plugin can pull in data from our WordPress site, let’s start creating static content based on our posts and pages!</p>
+<p>Let’s start with something simple and pull in the posts and display them in the developer console. This involves two steps:</p>
+<ul>
+<li>Create a GraphQL query</li>
+<li>Act upon the results of the query being run (in this case we’ll just display the contents of the query)</li>
+</ul>
+<p>Page creation is handled by <a href="https://www.gatsbyjs.org/docs/node-apis/#createPages">createPages</a> API, using promises we can perform the required steps to programmatically create pages. Let’s edit the <code>gatsby-node.js</code> add the following code.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#ebcb8b;">exports</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">createPages </span><span style="background-color:#2b303b;color:#c0c5ce;">= ({ graphql, actions }) </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">createWpPosts </span><span style="background-color:#2b303b;color:#c0c5ce;">= new </span><span style="background-color:#2b303b;color:#ebcb8b;">Promise</span><span style="background-color:#2b303b;color:#c0c5ce;">((resolve, reject) </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">query </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#8fa1b3;">graphql</span><span style="background-color:#2b303b;color:#c0c5ce;">(`
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">{
+</span><span style="background-color:#2b303b;color:#a3be8c;">        </span><span style="background-color:#2b303b;color:#a3be8c;">allWordpressPost {
+</span><span style="background-color:#2b303b;color:#a3be8c;">          </span><span style="background-color:#2b303b;color:#a3be8c;">edges {
+</span><span style="background-color:#2b303b;color:#a3be8c;">            </span><span style="background-color:#2b303b;color:#a3be8c;">node {
+</span><span style="background-color:#2b303b;color:#a3be8c;">              </span><span style="background-color:#2b303b;color:#a3be8c;">id
+</span><span style="background-color:#2b303b;color:#a3be8c;">              </span><span style="background-color:#2b303b;color:#a3be8c;">slug
+</span><span style="background-color:#2b303b;color:#a3be8c;">            </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">          </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">        </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">`)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">query</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">then</span><span style="background-color:#2b303b;color:#c0c5ce;">(result </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">console.</span><span style="background-color:#2b303b;color:#96b5b4;">log</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">JSON</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">stringify</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">, </span><span style="background-color:#2b303b;color:#d08770;">null</span><span style="background-color:#2b303b;color:#c0c5ce;">, </span><span style="background-color:#2b303b;color:#d08770;">4</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#8fa1b3;">resolve</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}) </span><span style="background-color:#2b303b;color:#65737e;">// query.then
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}) </span><span style="background-color:#2b303b;color:#65737e;">// createWpPosts
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">return </span><span style="background-color:#2b303b;color:#ebcb8b;">Promise</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">all</span><span style="background-color:#2b303b;color:#c0c5ce;">([</span><span style="background-color:#2b303b;color:#bf616a;">createWpPosts</span><span style="background-color:#2b303b;color:#c0c5ce;">])
+</span><span style="background-color:#2b303b;color:#c0c5ce;">} </span><span style="background-color:#2b303b;color:#65737e;">// createPages
+</span></pre>
+<p>Go ahead and restart <code>gatsby develop</code>, you should see the following in your terminal:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">success building schema — 0.920 s
+</span><span style="background-color:#2b303b;color:#c0c5ce;">⠁ {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;data&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;allWordpressPost&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;edges&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;node&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                        </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;id&quot;: &quot;51ec1d4e-7b5f-54b8-b5ea-f36aea0c1d8f&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                        </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;slug&quot;: &quot;a-long-form-post&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span></pre>
+<p>Whilst this is not very exciting, it confirms that we’ve been able to pull our posts from WordPress. It turns out the two fields  <code>id</code> and <code>slug</code> are just what we need to begin programmatically creating pages.</p>
+<h2>Create pages based on Wordpress</h2>
+<p>Let’s update our code, for brevity we've omitted blocks of code that haven’t changed if you get stuck there’s a commit hash at the end of this checkpoint.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#c0c5ce;">path = </span><span style="background-color:#2b303b;color:#8fa1b3;">require</span><span style="background-color:#2b303b;color:#c0c5ce;">(&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">path</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#ebcb8b;">exports</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">createPages </span><span style="background-color:#2b303b;color:#c0c5ce;">= ({ graphql, actions }) </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#c0c5ce;">{ </span><span style="background-color:#2b303b;color:#bf616a;">createPage </span><span style="background-color:#2b303b;color:#c0c5ce;">} = </span><span style="background-color:#2b303b;color:#bf616a;">actions
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">createPostPages </span><span style="background-color:#2b303b;color:#c0c5ce;">= new </span><span style="background-color:#2b303b;color:#ebcb8b;">Promise</span><span style="background-color:#2b303b;color:#c0c5ce;">((resolve, reject) </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#65737e;">// omitted
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#bf616a;">query</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">then</span><span style="background-color:#2b303b;color:#c0c5ce;">(result </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.errors) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">console.</span><span style="background-color:#2b303b;color:#96b5b4;">error</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">results</span><span style="background-color:#2b303b;color:#c0c5ce;">.errors)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#8fa1b3;">reject</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.error)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">postEdges </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.data.allWordpressPost.edges
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#bf616a;">postEdges</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">forEach</span><span style="background-color:#2b303b;color:#c0c5ce;">(edge </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#8fa1b3;">createPage</span><span style="background-color:#2b303b;color:#c0c5ce;">({
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">path: `</span><span style="background-color:#2b303b;color:#a3be8c;">/</span><span style="background-color:#2b303b;color:#c0c5ce;">${</span><span style="background-color:#2b303b;color:#bf616a;">edge</span><span style="background-color:#2b303b;color:#c0c5ce;">.node.slug}`,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">component: </span><span style="background-color:#2b303b;color:#bf616a;">path</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">resolve</span><span style="background-color:#2b303b;color:#c0c5ce;">(`</span><span style="background-color:#2b303b;color:#a3be8c;">./src/templates/post.js</span><span style="background-color:#2b303b;color:#c0c5ce;">`),
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">context: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">id: </span><span style="background-color:#2b303b;color:#bf616a;">edge</span><span style="background-color:#2b303b;color:#c0c5ce;">.node.id,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">})
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">})
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#8fa1b3;">resolve</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#65737e;">// omitted
+</span></pre>
+<p>Before we create any pages, let’s do a bit of error handling and return early from our promise if we hit any errors.</p>
+<p>Next, we extract our results into a const to make it easier to read the code.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">postEdges </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.data.allWordpressPost.edges
+</span></pre>
+<p>You’ll recall that this is just a flattening of our GraphQL query.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">allWordpressPost {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">edges {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">...
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>We then iterate over our results calling the createPage API, which expects three parameters:</p>
+<ul>
+<li><code>path</code> which will be used to create a page slug, WordPress already has this data, so rather than compute it ourselves let’s reuse it.</li>
+<li><code>component</code> is React parlance for a unit of markup. Think of a controls toolbox with various components you can add to a form. We’ll take about this in the next section.</li>
+<li><code>context</code> allows us to pass data to the component, in this case, we’ll pass the WordPress Id of our posts.</li>
+</ul>
+<h2>Checkpoint: Create a blog post template</h2>
+<p>That’s a lot of information to take in, but we’re almost there!</p>
+<p>Remember the <code>component</code> parameter from the last section?</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">component: </span><span style="background-color:#2b303b;color:#bf616a;">path</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">resolve</span><span style="background-color:#2b303b;color:#c0c5ce;">(`</span><span style="background-color:#2b303b;color:#a3be8c;">./src/templates/post.js</span><span style="background-color:#2b303b;color:#c0c5ce;">`),
+</span></pre>
+<p>Let’s go ahead and create that file <code>post.js</code>.</p>
+<p>Note: you’ll need to create a new subdirectory within <code>src</code> called <code>templates</code>.</p>
+<p><code>src/templates/post.js</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">import React from &#39;react&#39;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">import Layout from &#39;../components/layout&#39;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">export default () =&gt; {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">return (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div&gt;Hello blog post&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Let’s stop and restart Gatsby:<code>gatsby develop</code></p>
+<p>We don’t have an index page to view our newly created post, but the Gatsby 404 development page acts as handy makeshift.</p>
+<p>Go to a non-existent page: <code>http://localhost:8000/xyz</code></p>
+<p>You should now see your WordPress blog posts alongside other pages that Gatsby knows about.</p>
+<p><img src="/img/gxw-post-template-1.png" alt="Post Template 1" /></p>
+<p>You may have gathered that our current post template is pretty basic, so clicking on any of our posts will just display the same contents. The important thing to observe is that we now have pages for our WordPress posts and the template is being used for each post.</p>
+<p>If you got stuck, you can check out the following Git hash: <a href="https://github.com/booyaa/wordsby/commit/13a036ae2a8dea2ea0f7a910c35c2fe4789f9a50"><code>13a036ae2a8dea2ea0f7a910c35c2fe4789f9a50</code></a></p>
+<h2>Turning that template into something useful</h2>
+<p>As you gathered from the last section, all we’ve managed to do with our template is to generate slugs. The means to pull the content is available, but we need to wire it up. Again we’ll only show you the bits you need to add/modify</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">import { graphql } from &#39;gatsby&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">export default ({ data }) =&gt; {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">const post = data.wordpressPost
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">return (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h1 dangerouslySetInnerHTML=&amp;#123;&amp;#123; __html: post.title  &amp;#124;&amp;#124; /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h3&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">date: {post.date} tags: {extractTags(post)}{&#39; &#39;}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/h3&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div dangerouslySetInnerHTML=&amp;#123;&amp;#123; __html: post.content  &amp;#124;&amp;#124; /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>We can see our function’s signature has changed to allow data to be passed (which will be provided by a GraphQL later on). The key things to notice here is the use of  <a href="https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml">dangerouslySetInnerHTML</a> and the JSX <a href="https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx">expressions</a> (curly brackets - looks a bit like moustache doesn’t it?).</p>
+<p><code>dangerouslySetInnerHTML</code> is a React’s replacement for innerHTML, why but is it dangerous? Setting HTML from code (or in this case from a database) is risky because it’s easy to expose yourself to XSS). So by using this helper you acknowledging, you’re doing something DANGEROUS, but before we complete freak out, let’s do a quick assessment of the data we’re parsing. <strong>Our</strong> WordPress blog, with content  <strong>we’ve</strong> written. So unless we have a serious case of self-loathing, it’s unlikely we’re at risk here. If you do need to parse HTML safely,  there are options like <a href="https://github.com/remarkablemark/html-react-parser">html-react-parser</a></p>
+<p>If the field our <code>post</code> object we’re interested doesn’t have any markup, then we can use expressions to rendered them <code>{post.date}</code>.</p>
+<p>You can stick any valid JavaScript with these expressions and <code>extractTags</code> is a helpful function to flatten the array of tags for our posts. Here’s the definition of that helpful function (add after our default function).</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">const extractTags = post =&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">post.tags ? post.tags.map(x =&gt; x.name).join(&#39;, &#39;) : &#39;none&#39;
+</span></pre>
+<p>Almost there, just need to add our GraphQL that will power this template.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">export const pageQuery = graphql`
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">query($id: String!) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">wordpressPost(id: { eq: $id }) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">title
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">tags {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">name
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">date(formatString: &quot;Do MMMM YYYY&quot;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">content
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">`
+</span></pre>
+<p>The <a href="https://www.gatsbyjs.org/docs/page-query/">pageQuery</a> takes the WordPress Post Id we passed in the context when we created our static pages in <code>gatsby-node.js</code> (see below) and allows us to pull a specific WordPress post using this Id <code>wordpressPost(id: { eq: $id })</code>, we don’t need to pull everything we just need the title, tags, publish date and content. Note: we used GraphQL to format the date.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">createPage({
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">path: `/${edge.node.slug}`,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">component: path.resolve(`./src/templates/post.js`),
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">context: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">id: edge.node.id,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">})
+</span></pre>
+<p>Demo: remember our friend <code>dangerouslySetInnerHTML</code>, you could avoid the risks by using expressions, but as you can see if there’s any markup it will be sanitised i.e. it will be escaped.</p>
+<h2>Checkpoint: let’s see that content</h2>
+<p>It’s probably best we restart gatsby to see our changes.</p>
+<p><img src="/img/gxw-post-template-2.png" alt="Post Template 2" /></p>
+<p>If you got stuck, you can check out the following Git hash: <a href="https://github.com/booyaa/wordsby/commit/50156723a4b21f08baeece9a5f7cd3936e384ee8"><code>50156723a4b21f08baeece9a5f7cd3936e384ee8</code></a></p>
+<p><strong>The Gatsby x WordPress Blog Post series</strong></p>
+<ul>
+<li><a href="/2019/gatsby-wordpress-keeping-it-cheap-and-staying-in-touch">Keeping it cheap and staying in touch</a></li>
+<li><a href="/2019/gatsby-wordpress-setup">Setup</a></li>
+<li><em>Creating Content</em></li>
+<li><a href="/2019/gatsby-wordpress-index-page">Creating an index page</a></li>
+<li><a href="/2019/gatsby-wordpress-pages">Creating WordPress Page Types</a></li>
+<li><a href="/2019/gatsby-wordpress-netlify">Netlify or Die!</a></li>
+<li><a href="/2019/gatsby-wordpress-cutlasses-and-webhooks">Yarr! Cutlasses and Webhooks!</a></li>
+<li><a href="/2019/gatsby-wordpress-summary">Summary</a></li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

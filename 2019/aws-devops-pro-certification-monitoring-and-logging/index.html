@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Monitoring and Logging</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Monitoring and Logging</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 04, 2019 - Reading time: 2 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>What does the exam guide say?</h2>
+<p>To pass this domain, you'll need to know the following:</p>
+<ul>
+<li>Determine how to set up the aggregation, storage, and analysis of logs and metrics</li>
+<li>Apply concepts required to automate monitoring and event management of an environment</li>
+<li>Apply concepts required to audit, log, and monitor operating systems, infrastructures, and applications</li>
+<li>Determine how to implement tagging and other metadata strategies</li>
+</ul>
+<h2>What whitepapers are relevant?</h2>
+<p>According to the <a href="https://aws.amazon.com/whitepapers/#dev-ops">AWS Whitepapers for DevOps</a> we should look at the following documents:</p>
+<ul>
+<li><a href="https://d1.awsstatic.com/whitepapers/AWS_DevOps.pdf">Introduction to DevOps on AWS (20 pages)</a></li>
+</ul>
+<h2>What services and products covered in this domain?</h2>
+<ul>
+<li><a href="https://aws.amazon.com/cloudwatch/">CloudWatch</a> - Complete visibility of your cloud resources and applications. Chances are if you provision a resource (well at least through the Console), it's probably logging in CloudWatch.</li>
+<li><a href="https://aws.amazon.com/xray/">AWS X-Ray</a> - Analyze and debug production, distributed applications. Similar products are Rollbar, Sentry, Azure Application Insights.</li>
+</ul>
+<p>Source: <a href="https://aws.amazon.com/devops/#monitoring">AWS DevOps - Monitoring and Logging page</a></p>
+<h2>What about other types of documentation?</h2>
+<p>If you have the time, by all means, read the User Guides, but they are usually a couple of hundred pages. Alternatively, get familiar with the services using the FAQs:</p>
+<ul>
+<li><a href="https://aws.amazon.com/cloudwatch/faqs/">CloudWatch</a></li>
+<li><a href="https://aws.amazon.com/xray/faqs/">AWS X-Ray</a></li>
+</ul>
+<p>You're all expected to know the APIs</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/index.html">CloudWatch</a></li>
+<li><a href="https://docs.aws.amazon.com/xray/latest/api/Welcome.html">AWS X-Ray</a>. There's specific APIs for the Java, .Net (and Core), Ruby, Node and Python SDKs.</li>
+</ul>
+<p>Before you panic, you'll start to spot a pattern with the API verbs.</p>
+<p>And the CLI commands</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/index.html">CloudWatch</a>. This is for the command that is part of the AWS CLI. The standalone CloudWatch CLI has been deprecated.</li>
+</ul>
+<p>There's no CLI for X-ray</p>
+<p>As with the API, there are patterns to the commands.</p>
+<h2>Monitoring and Logging (yawn)</h2>
+<p>Monitoring and logging are what DevOps engineers do on a daily basis.  We use the data from our logs to spot patterns, and the monitoring alerts to react to issues and mitigate outages.</p>
+<p>It's not the most exciting topic to cover, it's a necessity for the role. I hope in future versions of the exam, this domain extends to Observability.</p>
+<p>This domain contains the fewest services, but make no mistake CloudWatch integrates with so many services it makes sense to have a good understanding of the features it provides. AWS X-Ray if you've used similar products, should be an easier concept to grasp (famous last words).</p>
+<h3>AWS DevOps Pro Certification Blog Post Series</h3>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: Monitoring and Logging
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-cloudwatch/">CloudWatch</a></li>
+<li><a href="/2019/aws-devops-pro-certification-xray/">AWS X-Ray</a></li>
+</ul>
+</li>
+<li>Domain 4: <a href="/2019/aws-devops-pro-certification-policy-standards-automation/">Policies and Standards Automation</a></li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

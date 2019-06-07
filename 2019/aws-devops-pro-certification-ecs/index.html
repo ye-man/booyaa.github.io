@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: AWS ECS</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: AWS ECS</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 04, 2019 - Reading time: 5 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>AWS ECS ...</p>
+<ul>
+<li>is Amazon's Docker managed service. Naturally, you also get a container registry service in the form of <a href="https://aws.amazon.com/ecr/">Elastic Container Registry</a> (ECR).</li>
+<li>comes in two varieties (launch types): EC2 or Fargate.
+<ul>
+<li>EC2 based clusters as the name implies uses EC2 instances as Docker hosts for containers.
+<ul>
+<li>You pay for the resources spun up i.e. EC2 instances and/or EBS volumes.</li>
+<li>You're also responsible for the upkeep of the EC2 instances (patching, monitoring and making secure).</li>
+</ul>
+</li>
+<li>Fargate abstracts away EC2 instances (much like serverless functions).
+<ul>
+<li>You pay for the vCPU (virtual CPU) and memory resources the container uses. This is charged at per second rate (with a minimum charge of a minute).</li>
+<li>Fargate is only available to few <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html">regions</a> (13 at the time of writing this)</li>
+<li>There's no EC2 instances to maintain, just your tasks.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>is not a Kubernetes managed services, this is a separate offering with the catchy name of <a href="https://aws.amazon.com/eks/">Elastic Container Service for Kubernetes Service</a> (EKS)</li>
+</ul>
+<p>Additional resources:</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html">AWS ECS User Guide</a></li>
+<li><a href="https://aws.amazon.com/ecs/faqs/">AWS ECS FAQ</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html">AWS ECS API</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/ecs/index.html">AWS ECS CLI</a></li>
+</ul>
+<h2>Why?</h2>
+<ul>
+<li>As with all managed services, you want to focus on the functionality rather than the upkeep of a service.</li>
+<li>With Docker becoming the lingua franca of the Cloud you can utilise 3rd party images and build solutions in a build block manner. Granted, Amazon has been using this modularized concept for many years (OpsWorks and Elastic Beanstalk) before Docker became mainstream.</li>
+</ul>
+<h2>When?</h2>
+<ul>
+<li>Microservices and batch jobs are good workloads for a cluster.</li>
+<li>You want to migrate away from Docker managed through on-premises infrastructure or EC2 instances that are not ECS managed.</li>
+</ul>
+<h2>How?</h2>
+<p>For this section, we're going to use Fargate rather than an EC2 based ECS cluster.</p>
+<p>This is mostly to reduce the additional complexity of provisioning the EC2 instances that will join the ECS cluster. This guide is loosely based around the <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html">Fargte</a> tutorial in the Developer Guide. I've just removed the part about setting up a service and ran a task with public IP we could visit to test.</p>
+<p>That said, for day to day work you may find yourself still using EC2 based cluster until Fargate is available across all regions. You may also still find yourself using EC2 based clusters from a cost-saving perspective. If anyone has a calculator they've created when it makes more sense to go with the Fargate launch-type over EC2, please share in the comments or @ me on Twitter!</p>
+<h3>Pre-requisites</h3>
+<ul>
+<li>A VPC with at least one subnet that has inbound and outbound access to the internet.</li>
+<li>A suitable security group as per the previous point</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME</span><span style="background-color:#2b303b;color:#c0c5ce;">=</span><span style="background-color:#2b303b;color:#a3be8c;">your-cluster-name
+</span><span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_SECURITY_GROUP</span><span style="background-color:#2b303b;color:#c0c5ce;">=</span><span style="background-color:#2b303b;color:#a3be8c;">your-security-group
+</span><span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_SUBNETS</span><span style="background-color:#2b303b;color:#c0c5ce;">=</span><span style="background-color:#2b303b;color:#a3be8c;">yoursubnet
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># create a cluster
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs create-cluster</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster-name </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># register a task
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">cat </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;&lt;</span><span style="background-color:#2b303b;color:#b48ead;">EOF </span><span style="background-color:#2b303b;color:#c0c5ce;">&gt; fargate-task.json
+</span><span style="background-color:#2b303b;color:#a3be8c;">{
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;family&quot;: &quot;sample-fargate&quot;,
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;networkMode&quot;: &quot;awsvpc&quot;,
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;containerDefinitions&quot;: [
+</span><span style="background-color:#2b303b;color:#a3be8c;">    </span><span style="background-color:#2b303b;color:#a3be8c;">{
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;name&quot;: &quot;fargate-app&quot;,
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;image&quot;: &quot;httpd:2.4&quot;,
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;portMappings&quot;: [
+</span><span style="background-color:#2b303b;color:#a3be8c;">        </span><span style="background-color:#2b303b;color:#a3be8c;">{
+</span><span style="background-color:#2b303b;color:#a3be8c;">          </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;containerPort&quot;: 80,
+</span><span style="background-color:#2b303b;color:#a3be8c;">          </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;hostPort&quot;: 80,
+</span><span style="background-color:#2b303b;color:#a3be8c;">          </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;protocol&quot;: &quot;tcp&quot;
+</span><span style="background-color:#2b303b;color:#a3be8c;">        </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">],
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;essential&quot;: true,
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;entryPoint&quot;: [&quot;sh&quot;, &quot;-c&quot;],
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;command&quot;: [
+</span><span style="background-color:#2b303b;color:#a3be8c;">        </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;/bin/sh -c </span><span style="background-color:#2b303b;color:#96b5b4;">\&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">echo &#39;&lt;html&gt; &lt;head&gt; &lt;title&gt;Hello dev.to-ers&lt;/title&gt; &lt;style&gt;body {margin-top: 40px; background-color: #333;} &lt;/style&gt; &lt;/head&gt;&lt;body&gt; &lt;div style=color:white;text-align:center&gt; &lt;h1&gt;Hello, world!&lt;/h1&gt; &lt;/div&gt;&lt;/body&gt;&lt;/html&gt;&#39; &gt;  /usr/local/apache2/htdocs/index.html &amp;&amp; httpd-foreground</span><span style="background-color:#2b303b;color:#96b5b4;">\&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;
+</span><span style="background-color:#2b303b;color:#a3be8c;">      </span><span style="background-color:#2b303b;color:#a3be8c;">]
+</span><span style="background-color:#2b303b;color:#a3be8c;">    </span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">],
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;requiresCompatibilities&quot;: [&quot;FARGATE&quot;],
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;cpu&quot;: &quot;256&quot;,
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#a3be8c;">&quot;memory&quot;: &quot;512&quot;
+</span><span style="background-color:#2b303b;color:#a3be8c;">}
+</span><span style="background-color:#2b303b;color:#b48ead;">EOF
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs register-task-definition \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--cli-input-json</span><span style="background-color:#2b303b;color:#c0c5ce;"> file://fargate-task.json
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># create a task, assign it to our network and enable the public IP
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs run-task \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--task-definition</span><span style="background-color:#2b303b;color:#c0c5ce;"> sample-fargate:2 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--count</span><span style="background-color:#2b303b;color:#c0c5ce;"> 1 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--launch-type </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">FARGATE</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--network-configuration </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">awsvpcConfiguration={subnets=[</span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_SUBNETS</span><span style="background-color:#2b303b;color:#a3be8c;">],securityGroups=[</span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_SECURITY_GROUP</span><span style="background-color:#2b303b;color:#a3be8c;">],assignPublicIp=</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;ENABLED&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># list tasks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs list-tasks</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># describe the task
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> ecs list-tasks</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME --query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">taskArns</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#bf616a;"> --output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs describe-tasks</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME --tasks </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_ID
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># get the public IP of the task (well, the one bound to the ENI)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_NETWORK_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> ecs describe-tasks</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME --tasks </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_ID --query </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">tasks[*].attachments[*].details[?name==`networkInterfaceId`].value</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#bf616a;"> --output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">export </span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_PUBLIC_IP</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> ec2 describe-network-interfaces</span><span style="background-color:#2b303b;color:#bf616a;"> --network-interface-ids </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_NETWORK_ID --query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">NetworkInterfaces[*].PrivateIpAddresses[*].Association.PublicIp</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#bf616a;"> --output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># test
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">curl </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_PUBLIC_IP
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># tear down
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs stop-task</span><span style="background-color:#2b303b;color:#bf616a;"> --task </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_TASK_ID --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ecs delete-cluster</span><span style="background-color:#2b303b;color:#bf616a;"> --cluster </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">ECS_CLUSTER_NAME
+</span></pre>
+<h2>API and CLI features and verbs</h2>
+<p><strong>Features</strong></p>
+<ul>
+<li>Clusters</li>
+<li>Services</li>
+<li>Task Sets</li>
+</ul>
+<p><strong>Verbs (CRUD)</strong></p>
+<ul>
+<li>create</li>
+<li>describe/list (cluster/services)</li>
+<li>update (service/task-set)</li>
+<li>delete</li>
+</ul>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>delete-account-setting</li>
+<li>delete-attributes</li>
+<li>deploy</li>
+<li>deregister-container-instance</li>
+<li>deregister-task-definition</li>
+<li>describe-container-instances</li>
+<li>describe-task-definition</li>
+<li>describe-tasks</li>
+<li>discover-poll-endpoint</li>
+<li>list-account-settings</li>
+<li>list-attributes</li>
+<li>list-container-instances</li>
+<li>list-tags-for-resource</li>
+<li>list-task-definition-families</li>
+<li>list-task-definitions</li>
+<li>list-tasks</li>
+<li>put-account-setting</li>
+<li>put-account-setting-default</li>
+<li>put-attributes</li>
+<li>register-container-instance</li>
+<li>register-task-definition</li>
+<li>run-task</li>
+<li>start-task</li>
+<li>stop-task</li>
+<li>submit-container-state-change</li>
+<li>submit-task-state-change</li>
+<li>tag-resource</li>
+<li>untag-resource</li>
+<li>update-container-agent</li>
+<li>update-container-instances-state</li>
+<li>update-service-primary-task-set</li>
+<li>wait</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro">Configuration Management and Infrastructure as Code</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-cloudformation">CloudFormation</a></li>
+<li><a href="/2019/aws-devops-pro-certification-elastic-beanstalk/">Elastic Beanstalk</a></li>
+<li><a href="/2019/aws-devops-pro-certification-opsworks">OpsWorks</a></li>
+<li><a href="/2019/aws-devops-pro-certification-lambda/">AWS Lambda</a></li>
+<li>AWS ECS</li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Config</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Managed Services</a></li>
+</ul>
+</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

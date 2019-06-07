@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Troubleshooting the Rust Language Server</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Troubleshooting the Rust Language Server</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Aug 18, 2017 - Reading time: 2 minutes.</time><br />
+      
+      <p>To understand how to troubleshoot the Rust Language Server (RLS), it helps to know what RLS is and how the components interact.</p>
+<p>RLS is a Rust implementation of the <a href="https://github.com/Microsoft/language-server-protocol">Language Server Protocol</a> (LSP). LSP is based on the client server architecture, and simplifies the way code editors and IDEs interact with a programming language.</p>
+<p>The client in this instance is the official <a href="https://marketplace.visualstudio.com/items?itemName=rust-lang.rust">RLS extension</a>. The server is <code>rls</code> which is another Rust command line tool like <code>rustfmt</code>, <code>racer</code> and <code>rustsym</code>. The extension is responsible for setting up and starting <code>rls</code>.</p>
+<p>If you want to find out more I recommend checking out <a href="https://www.ncameron.org/blog/">@nrc</a>'s introductory blog post: <a href="https://www.ncameron.org/blog/what-the-rls-can-do/">What the RLS can do</a>.</p>
+<p>Whilst this post is tailored towards the VS Code extension, where possible I'll let you know when you can run this against your own setup.</p>
+<h2>The up to date mantra</h2>
+<ul>
+<li>Always have the latest version of Rust nightly and RLS. <code>rustup update</code></li>
+<li>Keep Visual Studio Code and the Rust RLS extension up to date.</li>
+</ul>
+<h2>Increase logging level</h2>
+<p>To turn on the fire hose:
+<code>RUST_LOG=rls=debug code .</code></p>
+<p>To reduce the noise you can drop down to informational:
+<code>RUST_LOG=rls=info code .</code></p>
+<p>This tip assumes you have Visual Studio Code in your path so it can be launched from the command line.</p>
+<p>Diagnostics will appear in the <code>Output panel</code> for the Rust Language Server (the drop down to the right of the panel).</p>
+<p>This can also be used for other editors, just replace <code>code</code> with your own editor.</p>
+<h2>Additional configuration settings</h2>
+<p>In your user or workspace settings (<code>settings.json</code>) add the following  configuration parameters:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// Includes standard error from RLS in the Output panel. This isn&#39;t 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// particular useful if you&#39;ve already enabled logging at debug level.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">rust-client.showStdErr</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: </span><span style="background-color:#2b303b;color:#d08770;">true</span><span style="background-color:#2b303b;color:#c0c5ce;">,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// This will also log everything that appears in the Output panel to a 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// log file in the root of your workspace.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">rust-client.logToFile</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: </span><span style="background-color:#2b303b;color:#d08770;">true</span><span style="background-color:#2b303b;color:#c0c5ce;">,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Both of these will require a restart of the editor. If your LSP client implements the
+<a href="https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#workspace_didChangeConfiguration"><code>workspace/didChangeConfiguration</code></a> method, then add the same keys to your client's configuration file.</p>
+<p>Alternatively send the abovementioned method and that example json fragment to RLS.</p>
+<h2>Where to go if you need more help?</h2>
+<p><a href="https://www.ncameron.org/blog/">@nrc</a> has just written the definitive guide to <a href="https://github.com/rust-lang-nursery/rls/blob/master/debugging.md">debugging and troubleshooting
+RLS</a>. I would recommend you also visit this article.</p>
+<p>As always with any good open source project, help is always available via a new github <a href="https://github.com/rust-lang-nursery/rls/issues/new">issue</a>. Alternative if you use irc, you can ask in <code>#rust-dev-tools</code> on the Mozilla network.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

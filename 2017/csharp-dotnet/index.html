@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>C Sharp and .NET tips</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>C Sharp and .NET tips</h1>
+       
+      
+      
+      
+          
+         
+
+			<time pubdate="pubdate">Sep 01, 2017 - Reading time: less than a minute.</time><br />
+      
+      <h2>NUnit TestCases with instances of a type</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">public IEnumerable&lt;TestCaseData&gt; CanParseAsThingyTestCases
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">get
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">Setup();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">yield return new TestCaseData(@&quot;foo&quot;, new Thingy { name = &quot;foo&quot; });
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">yield return new TestCaseData(@&quot;bar&quot;, new Thingy { name = &quot;bar&quot; });        
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">[TestCaseSource(&quot; CanParseAsThingyTestCases&quot;)]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">public void CanParseAsThing(string input, Thingy expected)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">...
+</span></pre>
+<p>source: https://stackoverflow.com/a/4230328/105282</p>
+<h2>RegEx</h2>
+<p>A somewhat convoluted example to demonstrate to avoid magic strings (ish)/</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">string pattern = @&quot;^(?&lt;WANT&gt;Foo)bar$&quot;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">string input = @&quot;Foobar&quot;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">Regex r = Regex(patern, RegexOptions.SingleLine);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">Match m = r.Match(input);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">foreach (string groupName in r.GetGroupNames()) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">if (groupName != &quot;0&quot;) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">Console.WriteLine($&quot;Found {m.Groups[groupName].Value} in {groupName}&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Note to self:</p>
+<ul>
+<li>Turn this into a useful example
+<ul>
+<li>https://codereview.stackexchange.com/a/6962/2500</li>
+<li>https://stackoverflow.com/a/10417114/105282</li>
+</ul>
+</li>
+</ul>
+<h1>A gitignore for dotnet core</h1>
+<p>source: https://gist.github.com/booyaa/db187f5555afdba82d371b76119920c5</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;"># miscellany and obsolete artifact
+</span><span style="background-color:#2b303b;color:#c0c5ce;">*.swp
+</span><span style="background-color:#2b303b;color:#c0c5ce;">*.*~
+</span><span style="background-color:#2b303b;color:#c0c5ce;">project.lock.json
+</span><span style="background-color:#2b303b;color:#c0c5ce;">.DS_Store
+</span><span style="background-color:#2b303b;color:#c0c5ce;">*.pyc
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># Visual Studio Code
+</span><span style="background-color:#2b303b;color:#c0c5ce;">.vscode
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># Build results
+</span><span style="background-color:#2b303b;color:#c0c5ce;">[Bb]in/
+</span><span style="background-color:#2b303b;color:#c0c5ce;">[Oo]bj/
+</span></pre>
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

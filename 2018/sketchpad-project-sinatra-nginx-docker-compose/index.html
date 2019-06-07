@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>A sketchpad project based on Sinatra, Nginx using docker-compose</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>A sketchpad project based on Sinatra, Nginx using docker-compose</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jul 22, 2018 - Reading time: 4 minutes.</time><br />
+      
+      <p>I recently came across a monolithic application at work that used various frameworks, which in turn made extending existing routes very difficult to implement.</p>
+<p>The general consensus amongst my peers was to stick a proxy in front of the application. The only decision left was to determine if we could do this using the existing reverse proxy (<a href="https://www.nginx.com/">Nginx</a>), or write a bespoke proxy (between Nginx and the existing monolith).</p>
+<p>The requirement for the proxy was to take a value in the URL, and pass it on as a request parameter to the monolith.</p>
+<p>An example incoming URL might look like this <code>/api/parp/foo</code>. We want this URL to be rewritten to the monolith as <code>/api/foo</code> and <code>parp</code> to be appended to the request parameter as value for the key <code>fart_noise</code>. The only liberty I've taken with the solution is that the value of <code>fart_noise</code> will always be <code>parp</code> in this scenario.</p>
+<p>You can do this easily enough in Nginx using <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_body"><code>proxy_set_body</code></a> directive.</p>
+<p>In addition to this requirement, I needed to leave incoming URLs without <code>parp</code> as-is, this is because we expect the client to provide an alternative value for <code>fart_noise</code> i.e. <code>toot</code>.</p>
+<p>I created a test server to simulate the monolith using <a href="http://sinatrarb.com/">Sinatra</a>. Which is great for creating REST based APIs, I think it actually edges <a href="http://flask.pocoo.org/">Flask</a> out for simplicity.</p>
+<p>I used the <a href="http://sinatrarb.com/contrib/namespace.html"><code>namespace</code></a> directive to add prefix <code>/api</code> to the existing end points i.e. <code>/api/foo</code>. I only needed to prove the URL rewrites would work for <code>GET</code> and <code>POST</code> methods, so I echoed the <code>params</code> variable back as a response which allowed me to verify the parameters were being modified correctly.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">class </span><span style="background-color:#2b303b;color:#ebcb8b;">MyWay </span><span style="background-color:#2b303b;color:#eff1f5;">&lt; </span><span style="background-color:#2b303b;color:#a3be8c;">Sinatra::Base
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">register </span><span style="background-color:#2b303b;color:#ebcb8b;">Sinatra</span><span style="background-color:#2b303b;color:#c0c5ce;">::Namespace
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">namespace &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">/api</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">do
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">get &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">/foo</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">do
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">logger.info &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">api/foo parameters: </span><span style="background-color:#2b303b;color:#ab7967;">#{</span><span style="background-color:#2b303b;color:#a3be8c;">params</span><span style="background-color:#2b303b;color:#ab7967;">}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">params.</span><span style="background-color:#2b303b;color:#96b5b4;">inspect
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">end
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">post &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">/bar</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">do
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">logger.info &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">api/bar parameters: </span><span style="background-color:#2b303b;color:#ab7967;">#{</span><span style="background-color:#2b303b;color:#a3be8c;">params</span><span style="background-color:#2b303b;color:#ab7967;">}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">params.</span><span style="background-color:#2b303b;color:#96b5b4;">inspect
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">end
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">end
+</span><span style="background-color:#2b303b;color:#b48ead;">end
+</span></pre>
+<p>The Nginx config is a fairly standard reverse proxy setup. The only modification that I did was to created two <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location">location</a> blocks: one to handle the rewrite and appending a parameter to the request, and the other for URLs that did not need modification.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">server {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">listen 80;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">location /api/parp { # fix parps
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">rewrite (.*)/parp/(.*) /$1/$2 break;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">proxy_set_body $request_body&amp;fart_noise=parp;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;"># other proxy directives...
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">location /api { # leave as-is
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;"># other proxy directives...
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Obviously I didn't come up with this conclusion immediately, I needed some kind of sketchpad / scratch space to try out the various ideas for rewriting the requests. Enter <code>docker-compose</code>, a handy way to join a bunch of containers together without having brain meltdown from remembering the various incantations that are the individual docker commands.</p>
+<p>Here's the <code>docker-compose.yml</code> I used:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">version</span><span style="background-color:#2b303b;color:#c0c5ce;">: &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">3</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#bf616a;">services</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">app</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">build</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">./app
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">command</span><span style="background-color:#2b303b;color:#c0c5ce;">: [&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">bundle</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">exec</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">rackup</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">--host</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">0.0.0.0</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">--port</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">4567</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">volumes</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">./app/:/app
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">proxy</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">image</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">nginx
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">command</span><span style="background-color:#2b303b;color:#c0c5ce;">: [&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">nginx-debug</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">-g</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">daemon off;</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">volumes</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">./proxy/nginx.conf:/etc/nginx/nginx.conf
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">ports</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">8080:80
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">depends_on</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">app
+</span></pre>
+<p>The items you may find useful are:</p>
+<ul>
+<li>the <code>proxy</code> (Nginx) is dependant on <code>app</code> (Sinatra) starting up first</li>
+<li>we're using <code>volumes</code> to get the nginx container to read our <code>nginx.conf</code>, removing the need for a pointless <code>Dockerfile</code> that copies this file.</li>
+</ul>
+<p>You can see the whole project on <a href="https://github.com/booyaa/singinx">GitHub</a>.</p>
+<p>Shrewd readers will notice (in the repo) that <code>parp</code> isn't the item in the URL that we wanted to change. The problem was actually that there are different versions of the data set. Some view this as a change to the API therefore requiring a version tag in the URL. Others do not, which is why <code>version</code> was being passed as a parameter.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Being a Hedgehog - Part One</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Being a Hedgehog - Part One</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Sep 18, 2018 - Reading time: 5 minutes.</time><br />
+      
+      <p><em>This is part of my &quot;Blogging my Homework&quot; blog post series, the introductory post can be found <a href="/2018/blogging-my-homework/">here</a>.</em></p>
+<p>Caveat emptor: any errors or misunderstanding around concepts will almost certainly be my own rather than my employee (Made Tech). This is after all my own study and mistakes do occur during learning.</p>
+<h1>Web App Dev Core Skills Level 1 aka Hedgehog</h1>
+<p>This core skill is based around as the name suggests Web Application Development. It's focussed around the React framework because of this our chosen framework for front-end work at <a href="https://www.madetech.com/">Made Tech</a>.</p>
+<p>The <a href="https://learn.madetech.com/core-skills/web-application-development-with-react/#hedgehog">first</a> level of the <a href="https://learn.madetech.com/core-skills/web-application-development-with-react/">Web Application Development with React</a> core skill primarily deals with setting up a new project that is ready for production use.</p>
+<p>The core skill assessment is split into two parts: a practical demonstration (Application) and a theoretical (Understanding) in a Q &amp; A format. I have also split the blog posts accordingly so the first part will be the practical demonstration.</p>
+<h2>Assumptions</h2>
+<p>You have <a href="https://nodejs.org/en/">Node</a> and <a href="https://www.docker.com/">Docker</a> installed.</p>
+<h2>Our application</h2>
+<p>As part of the core skill, you are expected to work on an application. My choice was to create a guiding breathing app. Why this choice of app? Well sometimes, you need to take a breather when it all gets a bit much.</p>
+<p>More details of the will follow, but for now, it should be thought of in terms of the following:</p>
+<ul>
+<li>UI
+<ul>
+<li>Has a settings panel that allows you:
+<ul>
+<li>to define intervals between breathing in and out, and holding the breath.</li>
+<li>set the volume of sounds</li>
+</ul>
+</li>
+<li>Has a timer to define how long you wish to have you're guided breathing session.</li>
+</ul>
+</li>
+<li>Behaviours
+<ul>
+<li>Has a countdown timer</li>
+<li>Has visual and audio cues for when for guided breathing</li>
+</ul>
+</li>
+</ul>
+<h2>Setup</h2>
+<ul>
+<li>Create our app using <code>npx create-react-app breathe</code></li>
+<li>Enter our app <code>cd breathe</code></li>
+<li>Start our app  <code>npm start</code></li>
+</ul>
+<p><code>npx</code> is a handy way to install and run <code>create-react-app</code>.</p>
+<h2>Application</h2>
+<p>The practical part of the assessment has six areas where you will be assessed. I've created a header for each area.</p>
+<h3>Has created an application that is independent of the node install on the candidate's machine</h3>
+<p>Here we are being assessed on be able to provide a reproducible build. Docker is our prefer way of doing this, there are other alternatives.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">FROM node:10
+</span><span style="background-color:#2b303b;color:#c0c5ce;">WORKDIR /app
+</span><span style="background-color:#2b303b;color:#c0c5ce;">COPY package.json ./
+</span><span style="background-color:#2b303b;color:#c0c5ce;">RUN npm install
+</span><span style="background-color:#2b303b;color:#c0c5ce;">CMD [&quot;npm&quot;, &quot;start&quot;]
+</span></pre>
+<p>The general idea behind this <code>Dockerfile</code> is to use define an image with Node, copy the <code>package.json</code>, install its dependencies and start the application.</p>
+<p>Tip: During the early stages of prototyping I like to add <code>—verbose</code> to my <code>npm install</code></p>
+<p>Info: I’ve provided more information about the <code>Dockerfile</code> syntax in the references section below.</p>
+<p>Tip: If your application has many <code>Dockerfile</code>s or related scripts, you may find it prudent to keep application and Docker artefacts separate.</p>
+<p>Finally, we build and test our dockerized application.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">docker build -t . &lt;DOCKER_ID/MY_APP&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">docker run -it --rm -p 3000:3000 -v ${PWD}/public:/app/public -v ${PWD}/src:/app/src &lt;DOCKER_ID/MY_APP&gt; 
+</span></pre>
+<p>Once the app has finished running, you can open the site using <code>http://localhost:3000</code>
+<img src="/img/hedgehog-001-start.png" alt="Starting up React" /></p>
+<p>Tip: if you’ve done any kind of web development, you’ll have noticed that port <code>3000</code> is prevalent. Make sure you flush cookies associated with this address to avoid unexpected behaviour.</p>
+<p>You’re probably wondering why we’re using volume mounting (<code>-v</code>) this is to enable hot re-loading (which is a requirement).</p>
+<p>The <code>docker run</code>  feels a bit clunky, so let’s use a <code>docker-compose.yml</code>  file to simplify docker invocation.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">version</span><span style="background-color:#2b303b;color:#c0c5ce;">: &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#bf616a;">services</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">web</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">build</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#d08770;">.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">volumes</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">./public:/app/public
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- </span><span style="background-color:#2b303b;color:#a3be8c;">./src:/app/src
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">ports</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">- &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">3000:3000</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span></pre>
+<p>Again we’ll re-test.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">docker-compose build web
+</span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose run --rm --service-ports web
+</span></pre>
+<p>References</p>
+<ul>
+<li><a href="https://nodejs.org/en/docs/guides/nodejs-docker-webapp/">Dockerizing a Node.js web app | Node.js</a></li>
+<li><a href="https://docs.docker.com/engine/reference/builder/">Dockerfile reference | Docker Documentation</a></li>
+<li><a href="https://docs.docker.com/compose/compose-file/compose-file-v2/#service-configuration-reference">Compose file version 2 reference | Docker Documentation</a></li>
+</ul>
+<h3>Has a make recipe for serve, which runs the application in development mode</h3>
+<p>Whilst command history is great, you want the process of building and starting of your app to be a zero effort. To do this at Made Tech we utilise <code>Makefile</code>s.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">PHONY</span><span style="background-color:#2b303b;color:#c0c5ce;">:</span><span style="background-color:#2b303b;color:#a3be8c;">docker-build
+</span><span style="background-color:#2b303b;color:#8fa1b3;">docker-build</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose build web
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">PHONY</span><span style="background-color:#2b303b;color:#c0c5ce;">:</span><span style="background-color:#2b303b;color:#a3be8c;">serve
+</span><span style="background-color:#2b303b;color:#8fa1b3;">serve</span><span style="background-color:#2b303b;color:#c0c5ce;">:    
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose run --rm --service-ports web
+</span></pre>
+<p>In case you’re wondering why we opted for these target names, (<code>docker_build</code> and <code>serve</code>) it’s because we decided to define a standard for our <code>Makefile</code>s. This is to ensure that any engineer should be able to know without any documentation about how to build, serve and test an application. You can see our standard for <code>Makefile</code>s in our Requests of Comment repo: <a href="https://github.com/madetech/rfcs/blob/master/rfc-012-makefile-standards.md">Makefile Standards</a>.</p>
+<p>If you’re wondering why we didn’t just stick our targets in <code>package.json</code>, it’s because not all our projects are node based. Whereas a Makefile can always exist in any solution.</p>
+<p>Again we can test both these targets by the following invocations:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">make docker_build
+</span><span style="background-color:#2b303b;color:#c0c5ce;">make serve
+</span></pre>
+<h3>Has a make recipe for test, which runs the tests for the application</h3>
+<p>Time to add <code>test</code> to <code>Makefile</code>. Our <code>Makefile</code> now looks like this:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">PHONY</span><span style="background-color:#2b303b;color:#c0c5ce;">:</span><span style="background-color:#2b303b;color:#a3be8c;">docker-build
+</span><span style="background-color:#2b303b;color:#8fa1b3;">docker-build</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose build web
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">PHONY</span><span style="background-color:#2b303b;color:#c0c5ce;">:</span><span style="background-color:#2b303b;color:#a3be8c;">serve
+</span><span style="background-color:#2b303b;color:#8fa1b3;">serve</span><span style="background-color:#2b303b;color:#c0c5ce;">:    
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose run --rm --service-ports web
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">PHONY</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">test
+</span><span style="background-color:#2b303b;color:#8fa1b3;">test</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">docker-compose run --rm web npm test
+</span></pre>
+<p>Tip: If you want a single shot test run i.e you do not want to use the watch process, then add an environment variable called <code>CI</code> with the value <code>true</code> to <code>web</code>  section of <code>docker-compose.yml</code></p>
+<p>To test our target test we type <code>make test</code></p>
+<h3>Has a sandbox environment which allows them to quickly prototype components</h3>
+<p>For this requirement, we install Storybook.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">npm i -g @storybook/cli
+</span><span style="background-color:#2b303b;color:#c0c5ce;">storybook init # assumes we&#39;re still in our app&#39;s folder
+</span></pre>
+<p>We also add the following scripts to <code>package.json</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">storybook</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">start-storybook -p 9009 -s public</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">build-storybook</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">build-storybook -s public</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span></pre>
+<p>References</p>
+<ul>
+<li><a href="https://github.com/storybooks/storybook/tree/master/app/react#getting-started">Getting started with Storybook for React</a></li>
+</ul>
+<h3>Has the ability to hot-reload based on changes</h3>
+<p>You get this out of the box with React, this is done via react-scripts. If you’ve got the started via <code>make serve</code>, you can see this being demonstrated by changing the text in <code>src/App.js</code></p>
+<p>References</p>
+<ul>
+<li><a href="https://github.com/facebook/create-react-app/issues/873">Disabling opening of the browser in server start · Issue #873 · facebook/create-react-app · GitHub</a></li>
+<li><a href="https://medium.com/@kitze/configure-create-react-app-without-ejecting-d8450e96196a">Configure create-react-app without ejecting ⏏ – Kitze – Medium</a></li>
+<li><a href="https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md">create-react-app/README.md at master · facebook/create-react-app · GitHub</a></li>
+</ul>
+<h3>Has a failing test that appears when running make test</h3>
+<p>We can write a failing test by throwing an exception, which causes the test to fail immediately!</p>
+<p><img src="/img/hedgehog-002-test-fail.png" alt="React Test Failing" /></p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

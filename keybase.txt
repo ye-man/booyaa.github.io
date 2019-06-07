@@ -1,0 +1,68 @@
+==================================================================
+https://keybase.io/booyaa
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://booyaa.wtf
+  * I am booyaa (https://keybase.io/booyaa) on keybase.
+  * I have a public key with fingerprint 3967 2016 BD0A 941C 5AD4  AC1C 45BF 67FF B938 AA2F
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0101f4494e2c1dd114eb1379fddbcdb6120805533cbb4f4046481d0247227d630b290a",
+      "fingerprint": "39672016bd0a941c5ad4ac1c45bf67ffb938aa2f",
+      "host": "keybase.io",
+      "key_id": "45bf67ffb938aa2f",
+      "kid": "0101f4494e2c1dd114eb1379fddbcdb6120805533cbb4f4046481d0247227d630b290a",
+      "uid": "010ff678f2eac3209e6ef0b678096000",
+      "username": "booyaa"
+    },
+    "service": {
+      "hostname": "booyaa.wtf",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1503386034,
+  "expire_in": 157680000,
+  "prev": "0ffd55f6bd1b78744492f4441b4f4dbaf1b2cb571eedff032f919f760c1b1e49",
+  "seqno": 28,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.73
+Comment: https://keybase.io/crypto
+
+yMIfAnicrVJbSBVBGD6aGRmVBAZlBe1DL4rM7M7eTlFBFJXQhSyyjNPOzoxu2e7p
+nPWedoKi6EUQSy0RTOn2Imp2oSwtscvpIoGiWWF0AUUQfQiysmYlH4Ieexrmm+/7
+/u//mK75s3wJMdGNaSNP+rZciIl2Vub5Mi8OtJQI2CFFgr9EOEynD5pLaNgNHLaI
+4BcABJAhpCMqmpAQCBHFUFJ1Rgg2CVagCDQgy5JkYowYAkhBGiRARKooqkSRABZ1
+YAipArPsbBoKhizb5baSrqgigAomwNARNGWDIMOEJpIxU1TGsC5phiEyLsxxwp6C
+h8NGmKZZDsf4JTAd7x/8/5w7b8aO8UEaE6lhSiLQqUIZwBwBugIA8IhhGrKNI5Sz
+seMUGYZQmipwLN8yqVert8df72kFrpc3GHJcx3RyOZ7jusGw39O5RUGPWEBx4I9F
+AFs24R1yRT4NhS3HFvyQM03X8jyhDCRJU4CEUgVaGLRCNGB5DFlVNJ4PeHNovrcJ
+Y0SWGW8eYlVTEe9I5EUh6NVAsMEgFk0sq5BSwhiQRKZDnakKMCGGFOmCt9RR2xH8
+osZzGtncM2xl24abF6JC6cOOrDhfTIIvfnas97l8CXMTZ75cT/+cX5tbXo9OJlb+
+7GptaU5etTk63hUpq/w8vFphvZe+tV2ljYk1Yy+2pTRfP6c829oIKuJOPP765XJk
+6HhdZ1Z+wama4FT5SMaYcbow6fRdvWHn3ugZ9Li7tyxy8sM9zV577XlF9fqK7vjI
+wupFx/avLGw1Gq8MvleKoqS758athdvTyqeKFyx72Z5zNqkD71sxfOp+5cu2J61B
+YZPe1cbuHBrdUf81PdFu+lGVuTu5JO/a8IE9i1/Nbyh+0PcofWhX0oaI0/s28L52
+yfnhiXlv6nd9D9alHJxs/7JarF1XdXtgqGc862rB03a36d3R/pux2Rm+V/dLPi6P
+nfAN7k9as6Q//hNc+huoMU5L
+=sI44
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/booyaa
+
+==================================================================

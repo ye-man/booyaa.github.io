@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Using Cobalt with GitHub pages</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Using Cobalt with GitHub pages</h1>
+       
+      
+      
+      
+          
+				 
+
+			<time pubdate="pubdate">Jun 11, 2017 - Reading time: about a minute.</time><br />
+      
+      <p>It turns out using <a href="https://github.com/cobalt-org/cobalt.rs">Cobalt</a> and your
+personal GitHub page is a bit trickier to setup. Your personal GitHub page as
+oppose to your repo GitHub page, must have the content in the <code>master</code> branch.
+Repository/Project GitHub pages can live in a subdir of default branch i.e.
+<code>docs</code></p>
+<p>This is not a criticism of Cobalt, but rather myself demonstrating my lack of
+git prowess.</p>
+<p>The general gist of this how to, is that you place your Cobalt project in the
+<code>source</code> branch and then use <code>cobalt import --branch master</code> to transfer the
+rendered content to master.</p>
+<h2>Instructions</h2>
+<ul>
+<li>Create your user/personal page repo (USERNAME.github.io)</li>
+<li>Follow instructions for initialising a repo</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">git checkout -b source
+</span><span style="background-color:#2b303b;color:#c0c5ce;">cobalt init
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># do cobalty stuff..
+</span><span style="background-color:#2b303b;color:#c0c5ce;">cobalt build
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># commit, maybe even push to source
+</span><span style="background-color:#2b303b;color:#c0c5ce;">cobalt import --branch master
+</span><span style="background-color:#2b303b;color:#c0c5ce;">git checkout master
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># commit, definitely push
+</span></pre>
+<p>If you want to check out my setup you can find it <a href="https://github.com/booyaa/booyaa.github.io">here</a>.</p>
+<h2>Things I've not worked out yet</h2>
+<ul>
+<li>The <code>build</code> folder gets copied to the <code>master</code> branch during <code>cobalt import</code>.
+The folder doesn't contain any files. My work around at the moment is to add it
+to <code>.gitignore</code> in the <code>master</code> branch.</li>
+</ul>
+<h2>Thanks to...</h2>
+<ul>
+<li><a href="http://johannh.me">Johann Hofmann</a> for allowing me to copy his
+blog's style (and his travis-ci auto deploy setup).</li>
+<li><a href="https://github.com/cobalt-org/cobalt.rs">Cobalt</a> for creating this easy to
+use static site generator.</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

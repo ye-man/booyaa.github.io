@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: SLDC automation introduction</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: SLDC automation introduction</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Mar 25, 2019 - Reading time: 3 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>What does the exam guide say?</h2>
+<p>To pass this domain, you'll need to know the following:</p>
+<ul>
+<li>Apply concepts required to automate a CI/CD pipeline</li>
+<li>Determine source control strategies and how to implement them</li>
+<li>Apply concepts required to automate and integrate testing</li>
+<li>Apply the concepts required to build and manage artefacts securely</li>
+<li>Determine deployment/delivery strategies (e.g., A/B, Blue/green, Canary, Red/black) and how to
+implement them using AWS Services</li>
+</ul>
+<h2>What whitepapers are relevant?</h2>
+<p>According to the <a href="https://aws.amazon.com/whitepapers/#dev-ops">AWS Whitepapers for DevOps</a> we should look at the following documents:</p>
+<ul>
+<li><a href="https://d1.awsstatic.com/whitepapers/AWS_DevOps.pdf">Introduction to DevOps on AWS (20 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/aws-development-test-environments.pdf">Development and Test on AWS (17 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/DevOps/practicing-continuous-integration-continuous-delivery-on-AWS.pdf">Practicing Continuous Integration and Continuous Delivery (32 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/AWS_Blue_Green_Deployments.pdf">Blue/Green Deployments on AWS (35 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/jenkins-on-aws.pdf">Jenkins on AWS (48 pages)</a></li>
+</ul>
+<h2>What services and products covered in this domain?</h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/codecommit/index.html?id=docs_gateway#lang/en_us">Code Commit</a> - This service provides Source Control Management (SCM). This is where you store your source code and keep a track of the changes made (commits). Examples of similar services: GitHub, Bitbucket, GitLab, and Azure DevOps. You only have one choice of Version Control Service (VCS) and that is Git.</li>
+<li><a href="https://docs.aws.amazon.com/codebuild/index.html?id=docs_gateway#lang/en_us">Code Build</a> - This service builds code and produces artefacts. This is often part of a Continuous Integration (CI) pipeline, so this is where tests can be run to ensure the code is stable. Examples of similar services: Travis CI, Circle CI, Azure DevOps and Jenkins.</li>
+<li><a href="https://docs.aws.amazon.com/codedeploy/index.html?id=docs_gateway#lang/en_us">Code Deploy</a> -  This service automates the deployment of your applications or publishes files to a website. This is often part of a Continuous Deployment (CD) pipeline. Examples of similar services: Travis CI, Circle CI, Azure DevOps and Octopus.</li>
+<li><a href="https://docs.aws.amazon.com/codepipeline/index.html?id=docs_gateway#lang/en_us">Code Pipeline</a> - This service provide a workflow, allow for more complex release step. This is often part of a Continuous Deployment (CD) pipeline. Examples of similar services: Circle CI, Azure DevOps and Jenkins.</li>
+</ul>
+<p>Shrewd readers will have spotted that these are part of Developer Tools suite in the <a href="https://docs.aws.amazon.com/index.html?nc2=h_ql_doc#lang/en_us">AWS Documentation</a> page. So why have I excluded CodeStar, X-Ray and Tools &amp; SDKs? They're not critical to SDLC automation.</p>
+<h2>What about other types of documentation?</h2>
+<p>If you have the time, by all means, read the User Guides, but they are usually a couple of hundred pages. Alternatively, get familiar with the services using the FAQs:</p>
+<ul>
+<li><a href="https://aws.amazon.com/codecommit/faqs/">Code Commit</a></li>
+<li><a href="https://aws.amazon.com/codebuild/faqs/">Code Build</a></li>
+<li><a href="https://aws.amazon.com/codedeploy/faqs/">Code Deploy</a></li>
+<li><a href="https://aws.amazon.com/codepipeline/faqs/">Code Pipeline</a></li>
+</ul>
+<p>You're all expected to know the APIs</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/codecommit/latest/APIReference/index.html">Code Commit</a></li>
+<li><a href="https://docs.aws.amazon.com/codebuild/latest/APIReference/Welcome.html">Code Build</a></li>
+<li><a href="https://docs.aws.amazon.com/codedeploy/latest/APIReference/index.html">Code Deploy</a></li>
+<li><a href="https://docs.aws.amazon.com/codepipeline/latest/APIReference/index.html">Code Pipeline</a></li>
+</ul>
+<p>Before you panic, you'll start to spot a pattern with the API verbs.</p>
+<p>And the CLI commands</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/codecommit/index.html">Code Commit</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/codebuild/index.html">Code Build</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/deploy/index.html">Code Deploy</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/codepipeline/index.html">Code Pipeline</a></li>
+</ul>
+<p>As with the API, there are patterns to the commands.</p>
+<h2>CI, see what?</h2>
+<p>If you're not familiar with SDLC automation, this involves the automation of the following:</p>
+<ul>
+<li>build process that compiles the code, or optimises the content for a static site, docker image</li>
+<li>running tests to verify the build was successful</li>
+<li>deploying the new build to a target e.g. application servers, app store, web server, etc. This can also involve publishing the artefacts from the build process to GitHub Releases page of your repository.</li>
+</ul>
+<p>Usually, the trigger to initiate these steps is a commit or merge to the <code>master</code> branch of your code.</p>
+<p>The build and testing stages are often provided by a Continuous Integration service like Travis CI, Circle CI or Jenkins.</p>
+<p>The deployment stages are handled by you guessed it Continuous Delivery service like Octopus, Azure DevOps (release pipelines) and often services that provide CI will also handle deployment.</p>
+<p>Next, we're going to look at the Code Commit in greater detail.</p>
+<h3>AWS DevOps Pro Certification Blog Post Series</h3>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: SLDC automation
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-code-commit/">Code Commit</a></li>
+<li><a href="/2019/blog/aws-devops-pro-certification-code-build/">Code Build</a></li>
+<li><a href="/2019/aws-devops-pro-certification-code-deploy/">Code Deploy</a></li>
+<li><a href="/2019/aws-devops-pro-certification-code-pipeline">Code Pipeline</a></li>
+</ul>
+</li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging">Monitoring and Logging</a></li>
+<li>Domain 4: <a href="/2019/aws-devops-pro-certification-policy-standards-automation/">Policies and Standards Automation</a></li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

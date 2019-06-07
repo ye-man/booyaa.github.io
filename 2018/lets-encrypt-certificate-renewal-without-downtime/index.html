@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Let's Encrypt certificate renewal without downtime</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Let's Encrypt certificate renewal without downtime</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Sep 12, 2018 - Reading time: 2 minutes.</time><br />
+      
+      <p>Warning: this blog post assumes the following:</p>
+<ul>
+<li>you are running nginx in a <a href="https://www.docker.com/">Docker</a> container.</li>
+<li>Let’s Encrypt has been configured correctly in the nginx container.</li>
+<li>You are awesome for reading this blog.</li>
+</ul>
+<p>The default behaviour of <a href="https://certbot.eff.org/">certbot</a> (Let’s Encrypt’s command line tool) is to restart the web server. This isn’t desirable in a live environment, ideally you want your web server to reload it’s configuration. For <a href="https://www.nginx.com/">nginx</a>, this involves sending a <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">signal</a> to the process, in this case it’s <code>HUP</code> (hangup).</p>
+<p>But how can you tell that your certificates have been renewed?</p>
+<p>The recommended way by NGINX (the organisation rather than the web server) is to check the PIDs (Process Ids) before triggering nginx to reload the configuration.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">docker top &lt;NGINX_CONTAINER_ID&gt; axw -o pid,ppid,command | egrep &#39;(nginx|PID)&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">PID                 PPID                COMMAND
+</span><span style="background-color:#2b303b;color:#c0c5ce;">2089                31208               tail -f /var/log/nginx/access.log
+</span><span style="background-color:#2b303b;color:#c0c5ce;">3509                31222               nginx: worker process
+</span><span style="background-color:#2b303b;color:#c0c5ce;">31222               31208               nginx: master process nginx -g daemon off;
+</span></pre>
+<p>The PID you want to observe is <strong>nginx worker process</strong> (COMMAND) which is in this example is  <strong>3509</strong>.</p>
+<p>Pro-tip: You can pass <code>docker top</code>  subcommand <code>ps</code> flags? Neat huh?</p>
+<p>Now let’s send a <code>HUP</code> signal to the container to force nginx to reload the configuration: <code>docker kill —signal HUP &lt;NGINX_CONTAINER_ID&gt;</code></p>
+<p>Then re-check PIDs</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">docker top &lt;NGINX_CONTAINER_ID&gt; axw -o pid,ppid,command | egrep &#39;(nginx|PID)&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">PID                 PPID                COMMAND
+</span><span style="background-color:#2b303b;color:#c0c5ce;">2089                31208               tail -f /var/log/nginx/access.log
+</span><span style="background-color:#2b303b;color:#c0c5ce;">3643                31222               nginx: worker process
+</span><span style="background-color:#2b303b;color:#c0c5ce;">31222               31208               nginx: master process nginx -g daemon off;
+</span></pre>
+<p>The PID of the <strong>nginx worker process</strong> has now changed to <strong>3643</strong>!</p>
+<p>Further reading:</p>
+<ul>
+<li><a href="http://nginx.org/en/docs/control.html">Controlling nginx</a></li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Flocking shell</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Flocking shell</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jan 10, 2018 - Reading time: 2 minutes.</time><br />
+      
+      <p>Yesterday, I had an interesting problem. My cron task spawned hundreds of copies of itself because it was blocking on a database call. If a process spawns enough times, you'll eventually run out of file descriptors and will be unable to fork more processes. To avoid further repeats, I needed to add a check to see if the script was already running and exit early.</p>
+<p>My requirements for the script in question, also requires that it be able to spawn a specific instance. Instance in this case, could mean connecting to a different database. The important takeaway is that each instance, must be allow a spawn single copy of itself.</p>
+<p>I could've gone down the route of using creating a PID or lock file (storing the current process id of the script), checking if the current process and the PID file matched and exiting if not.</p>
+<p>Instead I fancied trying something different and according to StackOverflow <a href="https://linux.die.net/man/1/flock">flock</a> was a popular choice.</p>
+<p>Here's a snippet of how to enable file locking in your scripts.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;"># how to allow the script multiple times for different instances
+</span><span style="background-color:#2b303b;color:#c0c5ce;">readonly LOCKFILE=&quot;${LOCKFILE_DIR}/${PROGNAME}-${INSTANCE}.lock&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># to avoid command block, link file descriptor (auto incremented) to our lock file
+</span><span style="background-color:#2b303b;color:#c0c5ce;">exec {lock_fd}&gt;&quot;$LOCKFILE&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># early exit if instance is already running
+</span><span style="background-color:#2b303b;color:#c0c5ce;">flock -n ${lock_fd} || exit 1
+</span></pre>
+<p>The funny notation <code>{lock_fd}</code> is an auto-incrementing named file descriptor which doesn't appear until bash 4.1.x.x (so you're out of luck Mac users). To add the Mac woes, flock isn't bundled with Mac, but someone's created a cross platform <a href="https://github.com/discoteq/flock">version</a> with the same name.</p>
+<p>To prove my script no longer spawned multiple copies I wrote the following script (safe-driver.sh):</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">#!/bin/bash
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">clear
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">for i in $(seq 3)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">do 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">( 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">echo &quot;&gt; BEGIN FOO $i&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">safe.sh FOO
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">echo &quot;&gt; END FOO $i exit code: $?&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">) &amp; 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">done
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">if [ ! -z &quot;$IN_DOCKER&quot; ]; then
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">sleep 1 # allow scripts to run (needed for docker)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">fi
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">printf &quot;\n\njobs running (should only see one process running)\n&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">jobs -l
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">printf &quot;\n\nlist file locks\n&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">lsof /tmp/safe*.lock
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">if [ ! -z &quot;$IN_DOCKER&quot; ]; then
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">printf &quot;\n\npausing, press any key to return early\n&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">read -r
+</span><span style="background-color:#2b303b;color:#c0c5ce;">fi
+</span></pre>
+<h2>References</h2>
+<ul>
+<li>Elegant locking of bash program <a href="http://www.kfirlavi.com/blog/2012/11/06/elegant-locking-of-bash-program/">blog post</a> - I cribbed the idea of not running flock as a command block from Kfir's post, but I drew the line with how the code was organised. Where possible I try to avoid imposing coding style from other languages. I also still think bash can be consumed by two parties operational staff and developers, I would prefer to cater for ops since they usually end up looking after these scripts.&lt;/soapbox&gt;</li>
+<li>exec <a href="http://wiki.bash-hackers.org/commands/builtin/exec">examples</a> from bash-hackers.org - This was my first time to use exec in anger and I think it helped me understand the role the file descriptor played in my flock script.</li>
+<li>Advanced Bash-Scripting Guide (<a href="http://www.tldp.org/LDP/abs/html/special-chars.html">Special Characters</a> - This is my goto resource for searching for various symbols and glyphs often used blindly in bash. In particular I used this to find out the proper name for <code>()</code> (command block).</li>
+</ul>
+<h2>Updates</h2>
+<p>You may have seen an earlier post (on the 10th), which I withdrew because I didn't feel I had solved the problem sufficiently and there was a misunderstanding of how <a href="http://wiki.bash-hackers.org/scripting/bashchanges#redirection_and_related">automatic file descriptor allocation</a> works.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

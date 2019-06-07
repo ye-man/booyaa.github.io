@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Code Pipeline</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Code Pipeline</h1>
+       
+      
+      
+      
+          
+				 
+
+			<time pubdate="pubdate">Apr 10, 2019 - Reading time: about a minute.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>CodePipeline is continuous delivery service that can be used to orchestrate the various services required to release software automatically: CodeCommit, CodeBuild and CodeDeploy.</p>
+<h2>Why?</h2>
+<p>Whilst it is possible to trigger CodeComit, CodeBuild and CodeDeploy manually, CodePipeline will do this for you automatically (via CloudWatch Events)</p>
+<h2>When?</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">SDLC automation
+</span><span style="background-color:#2b303b;color:#c0c5ce;">~~~~~~~~~~~~~~~~
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">CodePipeline
+</span><span style="background-color:#2b303b;color:#c0c5ce;">+---------------------------------------+
+</span><span style="background-color:#2b303b;color:#c0c5ce;">|                                       |
+</span><span style="background-color:#2b303b;color:#c0c5ce;">| CodeCommit -&gt; CodeBuild -&gt; CodeDeploy |
+</span><span style="background-color:#2b303b;color:#c0c5ce;">|                                       |
+</span><span style="background-color:#2b303b;color:#c0c5ce;">+---------------------------------------+
+</span></pre>
+<h2>How?</h2>
+<p>TODO: going to revisit the previous blog posts for CodeCommit, CodeBuild and CodeDeploy to have a lab that spans these posts.</p>
+<h2>API and CLI features and verbs</h2>
+<h3>Features</h3>
+<ul>
+<li>Pipelines</li>
+<li>Custom Action Type</li>
+<li>Webhooks</li>
+</ul>
+<h3>Verbs (CRUD)</h3>
+<ul>
+<li>create/register</li>
+<li>get/list</li>
+<li>update/put</li>
+<li>delete</li>
+</ul>
+<h3>Outliers</h3>
+<ul>
+<li>acknowledge-job</li>
+<li>acknowledge-third-party-job</li>
+<li>disable-stage-transition</li>
+<li>enable-stage-transition</li>
+<li>get-job-details</li>
+<li>get-pipeline-execution</li>
+<li>get-pipeline-state</li>
+<li>get-third-party-job-details</li>
+<li>list-action-executions</li>
+<li>list-action-types</li>
+<li>list-pipeline-executions</li>
+<li>poll-for-jobs</li>
+<li>poll-for-third-party-jobs</li>
+<li>put-action-revision</li>
+<li>put-approval-result</li>
+<li>put-job-failure-result</li>
+<li>put-job-success-result</li>
+<li>put-third-party-job-failure-result</li>
+<li>put-third-party-job-success-result</li>
+<li>retry-stage-execution</li>
+<li>start-pipeline-execution</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-code-commit/">Code Commit</a></li>
+<li><a href="/2019/aws-devops-pro-certification-code-build/">Code Build</a></li>
+<li><a href="/2019/aws-devops-pro-certification-code-deploy/">Code Deploy</a></li>
+<li>Code Pipeline</li>
+</ul>
+</li>
+<li>Domain 2: Configuration Management and Infrastructure as Code</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

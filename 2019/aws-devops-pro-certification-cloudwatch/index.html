@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: CloudWatch</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: CloudWatch</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 05, 2019 - Reading time: 3 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>CloudWatch...</p>
+<ul>
+<li>is a service that allows you to collect, track and analyse metrics AWS resources and applications.</li>
+<li>consists of:
+<ul>
+<li>Dashboards - this is a customisable web page that can display graphs, metrics, text and query results. DevOps engineers would use a dashboard to provide an at a glance view of the system/environment's health.</li>
+<li>Metrics allow you to visualise your metrics and create alarms.
+<ul>
+<li>The following services (in scope for the exam) publish metrics to CloudWatch. A full list can be found in the <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html">User Guide</a>.
+<ul>
+<li>Amazon CloudFront</li>
+<li>CloudWatch Events and Logs</li>
+<li>AWS CodeBuild</li>
+<li>AWS EC2 / Auto Scaling</li>
+<li>AWS ECS</li>
+<li>AWS / EFS</li>
+<li>ELB</li>
+<li>AWS Kinesis</li>
+<li>AWS Lambda / Step Functions</li>
+<li>AWS OpsWorks</li>
+</ul>
+</li>
+<li>You can publish custom metrics from EC2 instances via the AWS CLI/API or applications by using the AWS SDK.</li>
+</ul>
+</li>
+<li>Alarms are generated off values from your metrics or a maths expression based around that value.
+<ul>
+<li>Common use cases for alarms are:
+<ul>
+<li>CPU/Memory utilisation</li>
+<li>Load Balancer Latency</li>
+<li>Storage Throughput</li>
+<li>Billing (exceeding a spending threshold)</li>
+</ul>
+</li>
+<li>Alarms can even be used to stop, terminate, reboot or recover an instance
+<ul>
+<li>There are three states for an Alarm:
+<ul>
+<li>OK - The metric or expression is within a defined threshold</li>
+<li>ALARM - The metric or expression is outside the defined threshold</li>
+<li>INSUFFICIENT DATA - The alarm has just started, but the metric is not available or there is not enough data for the metric to define its alarm state</li>
+</ul>
+</li>
+<li>Alarms only invoke actions for sustained state changes. So you won't keep generating alarms because you're in a state ALARM.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Logs are aggregated by Log Groups, to drill down to the actual logs you need to pick a log stream.
+<ul>
+<li>Insights allow you to run SQL like queries over your log data. An example query might be to view the most expensive request for your Lambda function.</li>
+</ul>
+</li>
+<li>Events are a near real-time stream of system events around changes to your AWS resources
+<ul>
+<li>Rules match incoming events and route them to the target</li>
+<li>Targets something that will process the events (SNS topic, Lambda)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Metric retention periods</p>
+<ul>
+<li>High res (&lt;60 seconds) is 3 hours. High resolution has to be activated and incurs an additional charge.</li>
+<li>Data points of 60 secs (1 min) is 15 days</li>
+<li>Data points of 300 secs (5 mins) is for 63 days</li>
+<li>Data points of 3600 seconds (1 hour) is for 455 (15 months)</li>
+</ul>
+<p>Additional resources:</p>
+<ul>
+<li><a href="https://aws.amazon.com/cloudwatch/">CloudWatch Product Page</a></li>
+<li><a href="https://aws.amazon.com/cloudwatch/faqs/">CloudWatch FAQ</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/index.html">CloudWatch User Guide</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/index.html">CloudWatch API</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/index.html">CloudWatch CLI</a></li>
+</ul>
+<h2>Why?</h2>
+<p>CloudWatch enables you to aggregate your logging and metrics into a centralised location. You can then perform analysis or visualise the data. Furthermore, you can use Alarms and Events to notify your team or perform automatic reactive action.</p>
+<h2>When?</h2>
+<p>You should use the CloudWatch Agent to gather metrics and logs from your EC2 instances or on-premises servers (Linux or Windows based).</p>
+<p>You should use the AWS CLI if you only need to publish custom metrics from your EC2 instance or on-premises servers.</p>
+<h2>How?</h2>
+<p>TODO: Unfortunately I've found these sections have been eating up a lot of my study time. I will try and revisit this during my revision stage.</p>
+<p>Here's what I had planned for this section:</p>
+<ul>
+<li>How to install the CloudWatch Agent log to capture logs from an EC2 instance, this would be based around <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html">this</a> guide.</li>
+<li>How to publish a custom metric and generate an alarm using the AWS CLI, this would be based around <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/PublishMetrics.html">this</a> guide.</li>
+</ul>
+<h2>API and CLI features and verbs</h2>
+<p>I'd hazard the guess the one API/CLI call you need to be familiar with is <code>put-metric-data</code> <a href="https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-data.html">CLI</a><a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricData.html">API</a> because it's got an immediate and practical use and isn't possible through the AWS Console.</p>
+<p><strong>Features</strong></p>
+<ul>
+<li>Alarms</li>
+<li>Dashboards</li>
+<li>Metrics</li>
+</ul>
+<p><strong>Verbs (CRUD)</strong></p>
+<ul>
+<li>??? oddly creation verbs are via Puts</li>
+<li>describe (alarms)/get (dashboard/metric-data)/list (dashboard/metrics)</li>
+<li>put (dashboard/metric-[alarm/data])</li>
+<li>delete (alarms/dashboards)</li>
+</ul>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>describe-alarm-history</li>
+<li>describe-alarms-for-metric</li>
+<li>disable-alarm-actions</li>
+<li>enable-alarm-actions</li>
+<li>get-metric-statistics</li>
+<li>get-metric-widget-image</li>
+<li>list-tags-for-resource</li>
+<li>set-alarm-state</li>
+<li>tag-resource</li>
+<li>untag-resource</li>
+<li>wait</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging/">Monitoring and Logging</a>
+<ul>
+<li>CloudWatch</li>
+<li><a href="/2019/aws-devops-pro-certification-xray/">AWS X-Ray</a></li>
+</ul>
+</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

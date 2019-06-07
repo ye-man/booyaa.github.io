@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: AWS Config and Managed Services</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: AWS Config and Managed Services</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 04, 2019 - Reading time: 3 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>I've decided to cover AWS Config and AWS Managed services together since it didn't seem to have two very short blog posts.</p>
+<p>AWS Config is a service that allows you to assess, audit and evaluate the configuration of your AWS resources. At a very basic level, this allows you to audit and track changes made to your environment.</p>
+<p>AWS Managed Service is a service where AWS managed and operate your infrastructure on AWS. That's right, AWS will run your infrastructure (with some caveats to discussed in the next section).</p>
+<p>Additional resources:</p>
+<ul>
+<li><a href="https://aws.amazon.com/config/">AWS Config Product Page</a></li>
+<li><a href="https://aws.amazon.com/config/faq/">AWS Config FAQ</a></li>
+<li><a href="https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html">AWS Config Developer Guide</a></li>
+<li><a href="https://docs.aws.amazon.com/config/latest/APIReference/Welcome.html">AWS Config API</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/configservice/index.html">AWS Config CLI</a></li>
+<li><a href="https://aws.amazon.com/managed-services/">AWS Managed Services Product Page</a></li>
+<li><a href="https://aws.amazon.com/managed-services/faqs/">AWS Managed Services FAQ</a></li>
+</ul>
+<h2>Why?</h2>
+<p>AWS Config strong leans towards auditing, change control and compliance. There are some use cases in the next section, but this would help AWS users who are heavily regulated like financial organisations.</p>
+<p>AWS Managed Service is generally aimed at large organisations (enterprises) that want a safer way to migrate from on-prem to cloud-based services. Whilst the service itself doesn't handle migration (this is handled by an AWS partner), you've probably had seen this scenario before:</p>
+<blockquote>
+<p>You work for an enterprise organisation, and the powers that be want you to move to the cloud. They don't want to pay for an expert, so they expect you to learn on the job.</p>
+<p>Months later, when the service goes up in smoke (because using one VPC and making it visible to the Internet seemed like a quick way to get things working). The powers that be finally hire the expert to design the cloud architecture from the ground up. Who then proceeds to berates you for not knowing your EC2s from your TF2s.</p>
+</blockquote>
+<p>The key fact to take away from that vent (sorry) is that AWS will deliver an infrastructure that is based on their own best practice. You can concentrate on getting the continuous delivery pipeline working and making the necessary changes to your applications to get them working on AWS.</p>
+<p>Eventually, you can take over this infrastructure, but this can be done when the team feels confident enough to do so.</p>
+<h2>When?</h2>
+<p>Some of the suggested (by AWS) uses for AWS Config are:</p>
+<ul>
+<li>Discovery (of resources)</li>
+<li>Change Management</li>
+<li>Continuous audit and compliance</li>
+<li>Compliance as code</li>
+<li>Troubleshooting</li>
+<li>Security Analysis</li>
+</ul>
+<p>AWS Managed Service is aimed at enterprises want to migrate to Cloud Services, but do not have to experience to do this themselves.</p>
+<h2>How?</h2>
+<p>There are no practical sections for these two services.</p>
+<p>Reminder: AWS Config will cost money if you decide to play around with it as it's not covered by the free tier.</p>
+<h2>API and CLI features and verbs</h2>
+<p>There's no section for AWS Managed Services because there's no API/CLI.</p>
+<p>Whilst there is an API/CLI for AWS Config, the common consensus is that you just need to be aware of the service. If you have come across a question during the exam that did rely on knowing the API please let me know.</p>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro">Configuration Management and Infrastructure as Code</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-cloudformation">CloudFormation</a></li>
+<li><a href="/2019/aws-devops-pro-certification-elastic-beanstalk">Elastic Beanstalk</a></li>
+<li><a href="/2019/aws-devops-pro-certification-opsworks">OpsWorks</a></li>
+<li><a href="/2019/aws-devops-pro-certification-lambda/">AWS Lambda</a></li>
+<li><a href="/2019/aws-devops-pro-certification-ecs">AWS ECS</a></li>
+<li>AWS Config</li>
+<li>AWS Managed Services</li>
+</ul>
+</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

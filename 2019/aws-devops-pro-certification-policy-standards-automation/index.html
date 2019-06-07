@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Policy and Standards Automation</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Policy and Standards Automation</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 05, 2019 - Reading time: 6 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>What does the exam guide say?</h2>
+<p>To pass this domain, you'll need to know the following:</p>
+<ul>
+<li>Apply concepts required to enforce standards for logging, metrics, monitoring, testing, and security</li>
+<li>Determine how to optimize cost through automation</li>
+<li>Apply concepts required to implement governance strategies</li>
+</ul>
+<h2>What services and products covered in this domain?</h2>
+<ul>
+<li><a href="https://aws.amazon.com/servicecatalog/">AWS Service Catalog</a></li>
+<li><a href="https://aws.amazon.com/premiumsupport/technology/trusted-advisor/">AWS Trusted Advisor</a></li>
+<li><a href="https://aws.amazon.com/systems-manager/">AWS Systems Manager</a></li>
+<li><a href="https://aws.amazon.com/organizations/">AWS Organizations Product Page</a></li>
+<li><a href="https://aws.amazon.com/secrets-manager/">AWS Secrets Manager Product Page</a></li>
+<li><a href="https://aws.amazon.com/macie/">AWS Macie Product Page</a></li>
+<li><a href="https://aws.amazon.com/certificate-manager/">AWS Certificate Manager Product Page</a></li>
+</ul>
+<h2>What about other types of documentation?</h2>
+<p>If you have the time, by all means, read the User Guides, but they are usually a couple of hundred pages. Alternatively, get familiar with the services using the FAQs:</p>
+<ul>
+<li>AWS Service Catalog <a href="https://aws.amazon.com/servicecatalog/faqs/?nc=sn&amp;loc=6">FAQ</a></li>
+<li>AWS Trusted Advisor <a href="https://aws.amazon.com/premiumsupport/technology/trusted-advisor/faqs/">FAQ</a></li>
+<li>AWS Systems Manager <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html">Guide</a>/<a href="https://aws.amazon.com/systems-manager/faq/">FAQ</a></li>
+<li>AWS Organizations <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html">Guide</a>/<a href="https://aws.amazon.com/organizations/faqs/">FAQ</a></li>
+<li>AWS Secrets Manager <a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html">Guide</a>/<a href="https://aws.amazon.com/secrets-manager/faqs/">FAQ</a></li>
+<li>AWS Macie <a href="https://docs.aws.amazon.com/macie/latest/userguide/what-is-macie.html">Guide</a>/<a href="https://aws.amazon.com/macie/faq/">FAQ</a></li>
+<li>AWS Certificate Manager <a href="https://aws.amazon.com/certificate-manager/getting-started/">Guide</a>/<a href="https://aws.amazon.com/certificate-manager/faqs/">FAQ</a></li>
+</ul>
+<p>You're all expected to know the APIs</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/servicecatalog/latest/dg/API_Reference.html">AWS Service Catalog API</a></li>
+<li><a href="https://docs.aws.amazon.com/awssupport/latest/user/trustedadvisor.html?nc2=type_a">AWS Trusted Advisor</a></li>
+<li><a href="https://docs.aws.amazon.com/systems-manager/latest/APIReference/Welcome.html">AWS Systems Manager API</a></li>
+<li><a href="https://docs.aws.amazon.com/organizations/latest/APIReference/Welcome.html">AWS Organizations API</a></li>
+<li><a href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/Welcome.html">AWS Secrets Manager API</a></li>
+<li><a href="https://docs.aws.amazon.com/macie/1.0/APIReference/Welcome.html">AWS Macie API</a></li>
+</ul>
+<p>Before you panic, you'll start to spot a pattern with the API verbs.</p>
+<p>And the CLI commands</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/ssm/index.html">AWS Systems Manager CLI</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/organizations/index.html">AWS Organizations CLI</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/index.html#cli-aws-secretsmanager">AWS Secrets Manager CLI</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/macie/index.html">AWS Macie CLI</a></li>
+</ul>
+<p>As with the API, there are patterns to the commands.</p>
+<h2>10 per cent</h2>
+<p>I've decided to keep all of the services around this domain within this intro, you're expected to be aware of the services, their purposes and uses cases rather than have in-depth knowledge around their implementation.</p>
+<p>Whilst this domain is only 10 per cent, it probably doesn't hurt to know of these services it might make the difference between a pass and fail grade when you take the exam.</p>
+<h3>What?</h3>
+<p><strong>AWS Service Catalog</strong>...</p>
+<ul>
+<li>allows you to build a catalogue of products (of AWS resources) that your users can use.</li>
+<li>through the use of the API, you can provision these services through your own front end instead of AWS console</li>
+<li>uses the following terminology
+<ul>
+<li>Products - are application stacks based around AWS resources created by admins</li>
+<li>Portfolios - are a collection of products</li>
+<li>Users - can launch these products without needed access to AWS or the console</li>
+</ul>
+</li>
+</ul>
+<p><strong>AWS Trusted Advisor</strong> is a service that provides a dashboard to report if AWS resources are not in line with current best practice. The reporting is categorised as follow:</p>
+<ul>
+<li>Cost Optimisation - will report on any low or underutilised resources to save you money</li>
+<li>Performance - will report any aspect of configuration that has an impact on resource performance</li>
+<li>Security -  will report any concerns around security i.e. MFA not enabled on the root account</li>
+<li>Fault Tolerance - will report on any resources that are not fault tolerant</li>
+<li>Service Limits - will report on resources that are close to reaching the service limits</li>
+</ul>
+<p>What reports you to get depend on the support plan you're on.</p>
+<p>Basic/Developer - get seven core checks (six from Security and all of the Service Limit reports)
+Business/Enterprise - get all the reporting and checks</p>
+<p><strong>AWS Systems Manager</strong> is an infrastructure management service that can perform the following tasks:</p>
+<ul>
+<li>Inventory - allows you to collect information about your instances and the software installed on them.</li>
+<li>Configuration compliance - scans your instance for patch compliance and configuration inconsistencies</li>
+<li>Automation - automates daily or repetitive tasks or reports</li>
+<li>Run Command - allows you to perform commands against a single or group of resources</li>
+<li>Session Manager simplifies connections to resources without needing to open inbound ports, setup bastion servers or manage SSH keys</li>
+<li>Patch Manager - allows you to deploy patches and updates to your instances either immediately or via a maintenance window</li>
+<li>Maintenance Windows - allows you to schedule pre-arranged outages</li>
+<li>Distributor is a software package distribution mechanism</li>
+<li>State manager to store policies that can be reapplied to resources when there is a drift in configuration</li>
+<li>Parameter Store (secrets and configuration data)</li>
+</ul>
+<p><strong>AWS Organizations</strong> allows you to organise your environment based on your own hierarchy or functional roles (security, compliance, operations, developer and finance).</p>
+<p><strong>AWS Secrets Manager</strong> encrypts secrets at rest using keys in KMS. Secrets can be database credentials, passwords and 3rd party API keys. You can store and control access through Console service, CLI, API and SDK.</p>
+<p>Secrets can be rotated automatically via a schedule</p>
+<p>Secret types you can store are:</p>
+<ul>
+<li>Credentials for RDS databases</li>
+<li>Credentials for other databases</li>
+<li>Other types of secrets (API keys, passwords, etc)</li>
+</ul>
+<p><strong>Amazon Macie</strong> uses machine learning to automatically identify, classify and protect sensitive data in AWS. It recognises personally identifiable information (PII) or intellectual property. It currently protects S3, but data store related services are being planned for the future.</p>
+<p><strong>AWS Certificate Manager</strong> centralised managed certificates in AWS. It has good integration with AWS services allowing it to provision TLS/SSL certificates on their behalf. You can also use it to set up a private certificate authority which can be internally within an organisation when there's no need to use trusted Internet Root CAs.</p>
+<h3>Why?</h3>
+<p><strong>AWS Service Catalog</strong> allows you to hide the specific implementation of your cloud infrastructure. By giving your users a separate front end, you can remove a direct association to an AWS account.</p>
+<p><strong>AWS Trusted Advisor</strong> is an automated tool to gather information about your AWS environment and report against those not configured as per best practice. It's also a cost-saving tool, making recommendations to remove unused resources or downgrade them. A full list of checks can be found on the <a href="https://aws.amazon.com/premiumsupport/technology/trusted-advisor/best-practice-checklist/">AWS Support</a> page.</p>
+<p><strong>AWS Systems Manager</strong> is a tool to centralised various tasks and activities you may wish to perform against your infrastructure. The CloudWatch Dashboards and Trusted Advisor reports are also integrated to make this a one-stop shop for systems management.</p>
+<p><strong>AWS Organizations</strong> allows you to map access to AWS resources based on your own business functions. The most simple example is to only allow developers access to the development environment and maybe read-only access to production.</p>
+<p><strong>Amazon Macie</strong> uses machine learning to identify personally</p>
+<h3>When?</h3>
+<p><strong>AWS Service Catalog</strong> should be used when you want your users to have a specific set of products based around AWS services, but don't want to give them access to the AWS Console or a specific IAM account.</p>
+<p><strong>AWS Trusted Advisor</strong> should be used when you need to find out if you're following best practice.</p>
+<p><strong>AWS Systems Manager</strong> is an enterprise tool, allow you to identify resources by attribute (AMI image id, OS type, instance type) rather than navigate to specific resources.</p>
+<p><em>AWS Organizations</em> when you need to map your business functions against AWS resources and IAM users, groups and roles are not sufficient enough controls.</p>
+<p><strong>Amazon Macie</strong> should be used by organisations that require careful handling of customer data i.e. health care or government. Where the volumes of data are not easily managed by a data administration team or monitored by security/compliance business function.</p>
+<p><strong>AWS Secrets Managers</strong> when you don't want to hard code secrets or store sensitive data on servers or have a regulatory requirement cycle secrets on a regular basis.</p>
+<p><strong>AWS Certificate Manager</strong> when you need to provision SSL/TLS certificates or need to a private certificate authority.</p>
+<h3>How?</h3>
+<p>If there are no specific instructions, it's assumed the service is available through the AWS Console.</p>
+<p><strong>AWS Service Catalog</strong> requires development so the <a href="https://docs.aws.amazon.com/servicecatalog/latest/dg/API_Reference.html">Developer Guide</a> should be consulted.</p>
+<p><strong>AWS Trusted Advisor</strong> is available through the AWS Console. In addition to the dashboard, you can send out weekly reports to receipts based on role: billing, operations and security.</p>
+<p><strong>AWS Systems Manager</strong> is available through the AWS Console, you can create groups to manage by searching for resources based on tags (resource type, operating system, etc). It will require an agent to be installed on the resource (as well as an IAM instance profile) to become a managed instance.</p>
+<h3>AWS DevOps Pro Certification Blog Post Series</h3>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging/">Monitoring and Logging</a></li>
+<li>Domain 4: Policies and Standards Automation
+<ul>
+<li>AWS Service Catalog</li>
+<li>AWS Trusted Advisor</li>
+<li>AWS Systems Manager</li>
+<li>AWS Organizations</li>
+<li>AWS Secrets Manager</li>
+<li>Amazon Macie</li>
+<li>AWS Certificate Manager</li>
+</ul>
+</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Using Rust with Visual Studio Code</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Using Rust with Visual Studio Code</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Aug 08, 2017 - Reading time: 3 minutes.</time><br />
+      
+      <h2>Which extension?</h2>
+<p>First off if you can, you should be using the Rust Language Server (RLS) <a href="https://marketplace.visualstudio.com/items?itemName=rust-lang.rust">extension</a>. Yes it's beta, but the user experience has been the best I've had, outside of in-house language support by giants like Microsoft and JetBrains! The extension will even install dependencies for you if you have <a href="http://rustup.rs/">rustup</a> installed!</p>
+<p>If you didn't want to use RLS, then the alternative is to install various Rust related tools (racers, rustfmt and rustsym) manually. The only Rust extension that support non-RLS is <a href="https://github.com/editor-rs/vscode-rust/blob/master/doc/legacy_mode/main.md">Kalita Alexey's</a>.</p>
+<p>Whilst we're on the subject of Kalita's extension, this was a fork of the <a href="https://marketplace.visualstudio.com/items?itemName=saviorisdead.RustyCode">RustyCode</a> extension which was no longer being actively maintained.</p>
+<p>The biggest draw this extension at the time was that it was available on the <a href="https://marketplace.visualstudio.com/">Visual Studio Marketplace</a>, where as the RLS team extension had to be manually installed via git.</p>
+<p>It will be interesting two see how the two active extensions progress.</p>
+<p>If you want a proper whistle stop tour of RLS I recommend you pop over to <a href="https://users.rust-lang.org/u/nrc">@nrc</a> blog as he's done a thorough job of it in this <a href="http://www.ncameron.org/blog/what-the-rls-can-do/">post</a>.</p>
+<h2>Debugging</h2>
+<p>I'm ashamed to admit that I still find setting up debugging Rust a bit of a black art if you're not using gdb. However thanks to the <a href="https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb">LLDB
+Debugger</a> extension it's become a little bit easier.</p>
+<p>The only bit that caught me out was the <code>launch.json</code> boiler plate code (see below for a sample), specifically what would be the correct value for <code>program</code> key. This is the path to your debug binary.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">version</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">0.2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">configurations</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">lldb</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">request</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">launch</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">name</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Debug</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">program</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}/&lt;your program&gt;</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">args</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">cwd</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>So if the binary you wish to debug is called <code>foo</code>, your value for the <code>program</code> key would look like this:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">program</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}/target/debug/foo</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>note: I've omitted the rest of the json keys that don't change for the sake of brevity.</p>
+<p>If you wanted to keep things generic and only compile a binary that matches the cargo folder name, you could use <code>${workspaceRootFolderName}</code> variable substitution.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">program</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}/target/debug/${workspaceRootFolderName}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>If you're interested in what other variables substitutions are available the <a href="https://code.visualstudio.com/Docs/editor/debugging#_variable-substitution">Visual Studio Code Debugger
+guide</a> has a handy list.</p>
+<p>One last option to enable is <code>sourceLanguages</code> with the value of <code>&quot;rust&quot;</code>, this option enables visualisation of built-in types and standard library types i.e. you can peek into the contents of a <code>Vec</code> etc.</p>
+<p>Here's a complete example of the <code>launch.json</code> for reference.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">version</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">0.2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">configurations</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">lldb</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">request</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">launch</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">name</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Debug</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">program</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}/target/debug/${workspaceRootFolderName}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">args</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">cwd</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">${workspaceRoot}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">sourceLanguages</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">rust</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

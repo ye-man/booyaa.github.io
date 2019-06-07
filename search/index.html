@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>search</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=about>
+  <nav class="menu">
+  <a class="menu-item current" href="/about/">booyaa</a>
+  <a class="menu-item " href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <h4>type something to search for in the box below</h4>
+<p>
+<input id="search" type="text" size="25" placeholder="search for stuff here..." autofocus><br />
+</p>
+
+<h4>...and your results will appear here. don't cha know?</h4>
+<ul id="results">
+</ul>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/lunr/lunr.js"></script>
+<script type="text/javascript">
+var lunrIndex,
+    $results,
+    pagesIndex;
+
+// This is pretty much a copy of https://gist.github.com/sebz/efddfc8fdcb6b480f567
+// Initialize lunrjs using our generated index file
+function initLunr() {
+    // First retrieve the pre-built index file
+    $.getJSON("/js/lunr_prebuilt.json")
+        .done(function(index) {
+            lunrIndex = lunr.Index.load(index);
+        })
+        .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.error("Error getting cobalt index file:", err);
+        });
+        
+    // Now fetch the document collection (to enrich the search results)
+    $.getJSON("/js/lunr_docs.json")
+        .done(function(index) {
+            pagesIndex = index;
+        })
+        .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.error("Error getting cobalt index file:", err);
+        });
+}
+
+// Nothing crazy here, just hook up a listener on the input field
+function initUI() {
+    $results = $("#results");
+    $("#search").keyup(function() {
+        $results.empty();
+
+        // Only trigger a search when 2 chars. at least have been provided
+        var query = $(this).val();
+        if (query.length < 2) {
+            return;
+        }
+
+        var results = search(query);
+
+        renderResults(results);
+    });
+}
+
+/**
+    * Trigger a search in lunr and transform the result
+    *
+    * @param  {String} query
+    * @return {Array}  results
+    */
+function search(query) {
+    // Find the item in our index corresponding to the lunr one to have more info
+    // Lunr result: 
+    //  {ref: "/section/page1", score: 0.2725657778206127}
+    // Our result:
+    //  {title:"Page1", href:"/section/page1", ...}
+    return lunrIndex.search(query).map(function(result) {
+            return pagesIndex.filter(function(page) {
+                return page.href === result.ref;
+            })[0];
+        });
+}
+
+/**
+    * Display the 10 first results
+    *
+    * @param  {Array} results to display
+    */
+function renderResults(results) {
+    if (!results.length) {
+        return;
+    }
+
+    // Only show the ten first results
+    results.slice(0, 10).forEach(function(result) {
+        var $result = $("<li style=\"list-style:none;\">"); // FUUUUUU!
+        $result.append($("<a>", {
+            href: "/"+result.href,
+            text: "» " + result.title
+        }));
+        $results.append($result);
+    });
+}
+
+// Let's get started
+initLunr();
+
+$(document).ready(function() {
+    initUI();
+});
+</script>
+
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

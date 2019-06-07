@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Mar 24, 2019 - Reading time: 4 minutes.</time><br />
+      
+      <p>This is the start of a blog post series about studying for the <a href="https://aws.amazon.com/certification/certified-devops-engineer-professional/">AWS DevOps Professional</a> certification.</p>
+<h2>Background</h2>
+<p>First a bit of background about me, I'm an engineer at <a href="https://www.madetech.com/">Made Tech</a> who specialises in <a href="https://landing.google.com/sre/books/">Site Reliability Engineering</a>. My job is to support our fellow software engineers on two of the three big cloud providers: AWS and Azure. I'm responsible for provisioning the infrastructure that the applications run on, setting up continuous delivery pipelines and application monitoring.</p>
+<p>This year I decided I want to strengthen my capabilities with AWS and a good way to do this is to become certified as an AWS DevOps Professional.</p>
+<p>My tried and tested method for learning stuff, is to blog about it which is why I'm creating this blog post series! Also, I'm accountable for my study by journaling the experience.</p>
+<h2>Certification</h2>
+<p>Before we begin, let's be clear about which version of the exam we're referring to. This is the certification exam taken after February 2019.</p>
+<p>The AWS DevOps Professional certification costs 300 USD and takes 170 minutes to complete, with a scoring system of 100-1000 points: you need 750 points to pass.</p>
+<p>In this version of the exam, they no longer provide the number of questions, but previously it was 80 questions so this works out about 2 minutes per question.</p>
+<p>The questions in the exam are information dense. There are two twos of question format:</p>
+<ul>
+<li>Multiple-choice - pick one as the correct answer.</li>
+<li>Multiple-response - two or more choice to make up the correct answer.</li>
+</ul>
+<p>If you're wondering how dense, take a look at the free <a href="https://d1.awsstatic.com/training-and-certification/docs-devops-pro/AWS%20Certified%20DevOps%20Engineer%20-%20Professional_Sample%20Questions.pdf">sample exam questions</a> (can't provide an example because it's copyrighted material).</p>
+<p>Go have a look, and come back when you've done it, I'll wait.</p>
+<p>Unless you're already a DevOps Pro or used AWS for a really long time you're probably in a state a shock.</p>
+<p>Whilst we wait for the shock subside, let's cover the areas you'll be tested on.</p>
+<h2>The master of your domain</h2>
+<p>There are six domains of study, this is the high-level view and we'll go into greater detail in the following posts as part of the series.</p>
+<table><thead><tr><th> Domain </th><th> Subject                                                   </th><th> % of exam </th></tr></thead><tbody>
+<tr><td> 1      </td><td> Software Delivery Lifecycle (SDLC) Automation             </td><td> 22        </td></tr>
+<tr><td> 2      </td><td> Configuration Management and Infrastructure as Code       </td><td> 19        </td></tr>
+<tr><td> 3      </td><td> Monitoring and Logging                                    </td><td> 15        </td></tr>
+<tr><td> 4      </td><td> Policies and Standards Automation                         </td><td> 10        </td></tr>
+<tr><td> 5      </td><td> Incident and Event Response                               </td><td> 18        </td></tr>
+<tr><td> 6      </td><td> High Availability, Fault Tolerance, and Disaster Recovery </td><td> 16        </td></tr>
+</tbody></table>
+<h2>Resources</h2>
+<p>Luckily there's a variety of resources to help you study.</p>
+<p>Your first port of call should be the <a href="https://d1.awsstatic.com/training-and-certification/docs-devops-pro/AWS%20Certified%20DevOps%20Engineer%20Professional_Exam%20Guide_v1.5_FINAL%20(2).pdf">exam guide</a> aka the blueprint. This guide will give you a list of whitepapers to ready. A detailed breakdown of the topics you're expected to know for each domain (see the table from the previous section).</p>
+<p>You've already seen the <a href="https://d1.awsstatic.com/training-and-certification/docs-devops-pro/AWS%20Certified%20DevOps%20Engineer%20-%20Professional_Sample%20Questions.pdf">sample exam questions</a>.</p>
+<p>The <a href="https://www.aws.training/training/schedule?courseId=19030?src=cert-prep">Exam Readiness Training</a> is another helpful resource with more sample questions.</p>
+<h2>Knowing when it's time to sit the exam</h2>
+<p>I didn't feel particularly confident I would pass the exam cold i.e. no study. The exam costs 350 USD, so I wasn't eager to spend that much money (even if it is covered by my employers) to fail.</p>
+<p>The next best thing was to try the practice the exam which costs 40 USD which has 20 questions you need to answer within an hour. The practice exam is booked through the <a href="https://www.aws.training/certification?src=cert-prep">AWS Certification site</a>. This is the same method for booking the actual exam, except you can take the practice exam online, whereas the actual exam requires you to visit a test centre.</p>
+<p>I sat the practice exam and scored 40% :(</p>
+<p>My study plan is to:</p>
+<ul>
+<li>create a series of blog posts</li>
+<li>do lots of actual practice using the services covered in the exam. I'll be using aws cli, Amazon AMI, MacOS, bash and jq. Reminder: some of the unix commands on MacOS are the BSD variant rather than GNU, but I'll try to limit using variant specific switch where possible.</li>
+<li>drill against a set of flashcards I'll be creating as part of the study plan</li>
+</ul>
+<p>I'm tentatively giving myself a month to study, spending at minimum two hours a day. After which I'm going to retake the practice exam if I score at least 80% I'll consider booking the exam.</p>
+<p>So stay tuned.</p>
+<h3>AWS DevOps Pro Certification Blog Post Series</h3>
+<ul>
+<li>Intro</li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging">Monitoring and Logging</a></li>
+<li>Domain 4: <a href="/2019/aws-devops-pro-certification-policy-standards-automation/">Policies and Standards Automation</a></li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

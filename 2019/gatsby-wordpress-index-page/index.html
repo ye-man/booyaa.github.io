@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Gatsby and WordPress: Creating an index page</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Gatsby and WordPress: Creating an index page</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jan 03, 2019 - Reading time: 2 minutes.</time><br />
+      
+      <h2>Order order! Let’s create an index to list our posts</h2>
+<p>Let’s visit http://localhost::8000/___graphql to fire up the builtin GraphQL explorer and paste the following query.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">allWordpressPost(sort: {fields: [date], order:DESC} ) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">totalCount
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">edges {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">node {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">title
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">excerpt
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">slug
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">date(formatString: &quot;Do MMMM&quot;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Things to note here how to sort the collection of posts. If you’re wondering what fields are available,  the explorer provides documentation for any plugins you have loaded so in the case of WordPress Post we can explore this clicking on the hover dialogue for <code>allWordpressPost</code>.</p>
+<p>Let’s update our index page (<code>src/pages/index.js</code>) to list our WordPress posts.</p>
+<p>First, we import <code>graphql</code> and we can remove our import of <code>Image</code> component.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">import { Link, graphql } from &#39;gatsby&#39;
+</span></pre>
+<p>Then we update IndexPage definition,  we use the <code>map</code> function transform each array item into an HTML fragment containing information about each post.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">const IndexPage = ({data}) =&gt; (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;SEO title=&quot;Home&quot; keywords={[`gatsby`, `application`, `react`]} /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h1&gt;Welcome to the Gatsby demo&lt;/h1&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h3&gt;There are {data.allWordpressPost.totalCount} posts&lt;/h3&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{data.allWordpressPost.edges.map(({ node }) =&gt; (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div key={node.id}&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Link to={node.slug}&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h4&gt;&lt;span dangerouslySetInnerHTML=&amp;#123;&amp;#123; __html: node.title &amp;#124;&amp;#124;/&gt; - {node.date}&lt;/h4&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/Link&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div dangerouslySetInnerHTML=&amp;#123;&amp;#123; __html: node.excerpt &amp;#124;&amp;#124; /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">))}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/Layout&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span></pre>
+<p>Finally, we add our pageQuery that we tested in our GraphQL explorer at the start of the post.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">export const pageQuery = graphql`
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">query {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">allWordpressPost(sort: { fields: [date], order: DESC }) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">totalCount
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">edges {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">node {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">id
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">title
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">excerpt
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">slug
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">date(formatString: &quot;Do MMMM&quot;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">`
+</span></pre>
+<h2>Checkpoint: Index page rebooted</h2>
+<p>If we visit <code>http://localhost:8000</code> we should see a different page to what we started at the beginning of this blog post series</p>
+<p><img src="/img/gxw-index.png" alt="Post Template 2" /></p>
+<p>If you got stuck, you can check out the following Git hash: <a href="https://github.com/booyaa/wordsby/commit/2249ea842a18e4da39c6e3abcf8eeabd78a17116"><code>2249ea842a18e4da39c6e3abcf8eeabd78a17116</code></a></p>
+<p><strong>The Gatsby x WordPress Blog Post series</strong></p>
+<ul>
+<li><a href="/2019/gatsby-wordpress-keeping-it-cheap-and-staying-in-touch">Keeping it cheap and staying in touch</a></li>
+<li><a href="/2019/gatsby-wordpress-setup">Setup</a></li>
+<li><a href="/2019/gatsby-wordpress-creating-content">Creating Content</a></li>
+<li><em>Creating an index page</em></li>
+<li><a href="/2019/gatsby-wordpress-pages">Creating WordPress Page Types</a></li>
+<li><a href="/2019/gatsby-wordpress-netlify">Netlify or Die!</a></li>
+<li><a href="/2019/gatsby-wordpress-cutlasses-and-webhooks">Yarr! Cutlasses and Webhooks!</a></li>
+<li><a href="/2019/gatsby-wordpress-summary">Summary</a></li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

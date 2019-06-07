@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Porting python turtle examples to turtle.rs</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Porting python turtle examples to turtle.rs</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Dec 15, 2017 - Reading time: 3 minutes.</time><br />
+      
+      <p>I've been tinkering around with the <a href="http://turtle.rs/">Rust version</a> of <a href="https://en.wikipedia.org/wiki/Turtle_graphics">Turtle graphics</a>. Turtle graphics, was a key feature of the programming language <a href="https://en.wikipedia.org/wiki/Logo_(programming_language)">Logo</a>, and has frequently been ported to other programming languages as a visual way to teach programming.</p>
+<p>I read somewhere that the author <a href="https://github.com/sunjay/turtle">Sunjay Varma</a> of Rust port of Turtle was inspired by python's own module.</p>
+<p>There's a few minor cosmetic changes <code>pendown()</code> vs <code>pen_down()</code>. So I decided to have a go at running existing python examples and I came across this code from the module <a href="https://docs.python.org/3/library/turtle.html">documentation</a>.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">from </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle </span><span style="background-color:#2b303b;color:#b48ead;">import </span><span style="background-color:#2b303b;color:#d08770;">*
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">color</span><span style="background-color:#2b303b;color:#c0c5ce;">(&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">red</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;, &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">yellow</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;)
+</span><span style="background-color:#2b303b;color:#8fa1b3;">begin_fill</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#b48ead;">while </span><span style="background-color:#2b303b;color:#d08770;">True</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#8fa1b3;">forward</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">200</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#8fa1b3;">left</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">170</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#96b5b4;">abs</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">pos</span><span style="background-color:#2b303b;color:#c0c5ce;">()) &lt; </span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">break
+</span><span style="background-color:#2b303b;color:#8fa1b3;">end_fill</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#8fa1b3;">done</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span></pre>
+<p><img src="/img/python-turtle.png" alt="python turtle!" /></p>
+<p>The only item that threw me was the <code>abs(pos())</code>. <code>pos()</code> is an alias to the <code>position</code> method which returns the cartesian coordinates (x,y). I figured some form of special handling was taking place.</p>
+<p>A quick search of the code.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">$ python3 -v
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">*lots of irrelevant noise*
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;&gt;&gt; import turtle
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-tk/turtle.pyc matches /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-tk/turtle.py
+</span></pre>
+<p>A quick peek at the <a href="https://github.com/python/cpython/blob/3.6/Lib/turtle.py#L265">source code</a> identified the <code>position</code> method returns a class called <code>Vec2D</code>, which in turn has a definition for abs' behaviour within this class.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#96b5b4;">__abs__</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">self</span><span style="background-color:#2b303b;color:#c0c5ce;">):
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">return </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">self</span><span style="background-color:#2b303b;color:#c0c5ce;">[</span><span style="background-color:#2b303b;color:#d08770;">0</span><span style="background-color:#2b303b;color:#c0c5ce;">]**</span><span style="background-color:#2b303b;color:#d08770;">2 </span><span style="background-color:#2b303b;color:#c0c5ce;">+ </span><span style="background-color:#2b303b;color:#bf616a;">self</span><span style="background-color:#2b303b;color:#c0c5ce;">[</span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">]**</span><span style="background-color:#2b303b;color:#d08770;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">)**</span><span style="background-color:#2b303b;color:#d08770;">0.5
+</span></pre>
+<p>My geometry is too sketch to guess at why you'd want to square the pair of cartesian coordinates, add the two numbers together. Finally exponentiation the result by 0.5, but there you go, this is what absolute value of a pair of cartesian coordinates should be.</p>
+<p>The equivalent Rust code would look something like this:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">abs</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">point </span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;Point) -&gt; </span><span style="background-color:#2b303b;color:#b48ead;">f64 </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(point[</span><span style="background-color:#2b303b;color:#d08770;">0</span><span style="background-color:#2b303b;color:#c0c5ce;">].</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">) + point[</span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">].</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">)).</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">0.5</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>The only method to address is <code>color</code> which in it's two parameter form sets the pen and fill colour.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">color</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">turtle</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> Turtle, </span><span style="background-color:#2b303b;color:#bf616a;">pen_color</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">str</span><span style="background-color:#2b303b;color:#c0c5ce;">, </span><span style="background-color:#2b303b;color:#bf616a;">fill_color</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">str</span><span style="background-color:#2b303b;color:#c0c5ce;">) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">set_pen_color</span><span style="background-color:#2b303b;color:#c0c5ce;">(pen_color);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">set_fill_color</span><span style="background-color:#2b303b;color:#c0c5ce;">(fill_color);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Here's the code in it's entirety:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">extern crate</span><span style="background-color:#2b303b;color:#c0c5ce;"> turtle;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">use </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle::{Turtle,Point};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">main</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> turtle = Turtle::new();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#96b5b4;">color</span><span style="background-color:#2b303b;color:#c0c5ce;">(&amp;</span><span style="background-color:#2b303b;color:#b48ead;">mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> turtle, &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">red</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">yellow</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">begin_fill</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">loop </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">forward</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">200.00</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">left</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">170.00</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#96b5b4;">abs</span><span style="background-color:#2b303b;color:#c0c5ce;">(&amp;turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">position</span><span style="background-color:#2b303b;color:#c0c5ce;">()) &lt; </span><span style="background-color:#2b303b;color:#d08770;">1.0 </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#b48ead;">break</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">end_fill</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">abs</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">point </span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;Point) -&gt; </span><span style="background-color:#2b303b;color:#b48ead;">f64 </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(point[</span><span style="background-color:#2b303b;color:#d08770;">0</span><span style="background-color:#2b303b;color:#c0c5ce;">].</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">) + point[</span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">].</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2.0</span><span style="background-color:#2b303b;color:#c0c5ce;">)).</span><span style="background-color:#2b303b;color:#96b5b4;">powf</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">0.5</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">color</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">turtle</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> Turtle, </span><span style="background-color:#2b303b;color:#bf616a;">pen_color</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">str</span><span style="background-color:#2b303b;color:#c0c5ce;">, </span><span style="background-color:#2b303b;color:#bf616a;">fill_color</span><span style="background-color:#2b303b;color:#c0c5ce;">: &amp;</span><span style="background-color:#2b303b;color:#b48ead;">str</span><span style="background-color:#2b303b;color:#c0c5ce;">) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">set_pen_color</span><span style="background-color:#2b303b;color:#c0c5ce;">(pen_color);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">turtle.</span><span style="background-color:#2b303b;color:#96b5b4;">set_fill_color</span><span style="background-color:#2b303b;color:#c0c5ce;">(fill_color);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>The result is fairly close!</p>
+<p><img src="/img/rust-turtle.png" alt="rust turtle!" /></p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

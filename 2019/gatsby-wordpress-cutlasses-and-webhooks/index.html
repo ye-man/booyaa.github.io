@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Gatsby and WordPress: Yarr! Cutlasses and WebHooks!</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Gatsby and WordPress: Yarr! Cutlasses and WebHooks!</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jan 06, 2019 - Reading time: 2 minutes.</time><br />
+      
+      <p>We’re almost finished! All we need to do is get WordPress to tell Netlify when we’ve published any new posts. To do this, we’ll use webhooks.</p>
+<ul>
+<li>Setup webhook in Netlify (<code>Build &amp; Deploy &gt; Continuous Deployment &gt; Build hooks &gt; Add build hook</code>)</li>
+<li>Go to your WordPress site’s Admin page (<code>Settings &gt; Webhooks &gt; Add webhook</code>)
+<ul>
+<li><strong>Action:</strong> publish_post</li>
+<li><strong>Fields:</strong> ID (this doesn’t matter)</li>
+<li><strong>URL:</strong> paste your Netlify web hook</li>
+</ul>
+</li>
+</ul>
+<p>Note: this will only cause a rebuild of the site Netlify for new posts, you need to create a separate webhook event to trigger for pages. Although if it can wait, until your next post. Gatsby will pull in those changes to posts too.</p>
+<p>You can test this works, by creating a new post in WordPress. You should see a new build job in Netlify almost immediately after hitting publish in WordPress. Once build, you should see your new post!</p>
+<p><img src="/img/gxw-webhook-post.png" alt="Web Hook Triggered Post" /></p>
+<p>Let’s the click deploy button to publish the site. If there were any errors, check out the logs in the Deploys section of your Netlify site.</p>
+<h2>Bonus material: Have you talked to your kid about PWAs?</h2>
+<p>At no point have we compared how performant our “starter” Gatsby site is. Installing and configuring the Offline site we can beat the default Lighthouse (Google Chrome Dev Tools) rating for a stock WordPress.com site. Let’s do this last thing!</p>
+<p>Note: this is a copy of the instructions from the Gatsby <a href="https://www.gatsbyjs.org/docs/add-offline-support-with-a-service-worker/#add-offline-support-with-a-service-worker">docs</a>.</p>
+<p>Install the plugin <code>npm install --save gatsby-plugin-offline</code></p>
+<p>Enable the offline plugin in <code>gatsby-config.js</code>.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">resolve: `</span><span style="background-color:#2b303b;color:#a3be8c;">gatsby-plugin-manifest</span><span style="background-color:#2b303b;color:#c0c5ce;">`,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#bf616a;">options</span><span style="background-color:#2b303b;color:#c0c5ce;">: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#65737e;">// details omitted
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">gatsby-plugin-offline</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Note: the offline plugin must come after the manifest plugin.</p>
+<p>Finally, add code to notify the user that they need to refresh the page when the service worker has an update:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#ebcb8b;">exports</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">onServiceWorkerUpdateFound </span><span style="background-color:#2b303b;color:#c0c5ce;">= () </span><span style="background-color:#2b303b;color:#b48ead;">=&gt; </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">const </span><span style="background-color:#2b303b;color:#bf616a;">answer </span><span style="background-color:#2b303b;color:#c0c5ce;">= window.</span><span style="background-color:#2b303b;color:#8fa1b3;">confirm</span><span style="background-color:#2b303b;color:#c0c5ce;">(
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">`</span><span style="background-color:#2b303b;color:#a3be8c;">This application has been updated. </span><span style="background-color:#2b303b;color:#c0c5ce;">` +
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">`</span><span style="background-color:#2b303b;color:#a3be8c;">Reload to display the latest version?</span><span style="background-color:#2b303b;color:#c0c5ce;">`
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">answer </span><span style="background-color:#2b303b;color:#c0c5ce;">=== </span><span style="background-color:#2b303b;color:#d08770;">true</span><span style="background-color:#2b303b;color:#c0c5ce;">) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">window.location.</span><span style="background-color:#2b303b;color:#8fa1b3;">reload</span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Let’s compare Lighthouse audits, first up is our stock WordPress blog:
+<img src="/img/gxw-lighthouse-1.png" alt="Web Hook Triggered Post" /></p>
+<p>And now our Gatsby site <code>*drum roll*</code>
+<img src="/img/gxw-lighthouse-2.png" alt="Web Hook Triggered Post" /></p>
+<p>This is pretty amazing, we turned out site into a compliant and highly performant Progressive Web App (PWA) in just a few simple steps. This is largely in part to the excellent boilerplate that you get when you run <code>gatsby new</code>.</p>
+<p>At last count, there were <a href="https://www.gatsbyjs.org/starters/?v=2">86</a> Gatsby starters created by the team and community. There’s bound to be a starter to fit your needs.</p>
+<p>If you got stuck, you can check out the following Git hash: <a href="https://github.com/booyaa/wordsby/commit/b1a4cc77a3d5ff0b0ad364ed5eff57fce30da5cf"><code>b1a4cc77a3d5ff0b0ad364ed5eff57fce30da5cf</code></a></p>
+<p><strong>The Gatsby x WordPress Blog Post series</strong></p>
+<ul>
+<li><a href="/2019/gatsby-wordpress-keeping-it-cheap-and-staying-in-touch">Keeping it cheap and staying in touch</a></li>
+<li><a href="/2019/gatsby-wordpress-setup">Setup</a></li>
+<li><a href="/2019/gatsby-wordpress-creating-content">Creating Content</a></li>
+<li><a href="/2019/gatsby-wordpress-index-page">Creating an index page</a></li>
+<li><a href="/2019/gatsby-wordpress-pages">Creating WordPress Page Types</a></li>
+<li><a href="/2019/gatsby-wordpress-netlify">Netlify or Die!</a></li>
+<li><em>Yarr! Cutlasses and Webhooks!</em></li>
+<li><a href="/2019/gatsby-wordpress-summary">Summary</a></li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

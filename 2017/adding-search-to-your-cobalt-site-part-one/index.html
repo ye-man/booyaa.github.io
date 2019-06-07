@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Adding search to your cobalt site - Part One</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Adding search to your cobalt site - Part One</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 20, 2017 - Reading time: 12 minutes.</time><br />
+      
+      <p>This will be a two part post, where I detail the steps it took to enable search on my <a href="https://github.com/cobalt-org/cobalt.rs">Cobalt</a> site.</p>
+<p>In this first post I will detail how to integrate <a href="http://lunrjs.com/">lunr</a>  using a manually created document collection. If you already know how to wire up lunr, you can skip to <a href="/2017/adding-search-to-your-cobalt-site-part-two/">second post</a>, where I create the document collection using a liquid template.</p>
+<p>I love blogs, but after the initial excitement of discovery you become curious about the blog author and if they have other posts of a similar topic. At this point you expect to have either a local search or some form of taxonomy.</p>
+<p>This is often a shortcoming of using a static site generator to power your blog. It's great at producing pre-rendered static pages, but search or tag views are the domain of a dynamic content management system.</p>
+<p>As the title of this blog post suggests, I will be looking to solve the problem of local search. I'll leave the subject of taxonomies for a future blog post.</p>
+<p>It turns out that we can approximate a resonable search experience using lunr. lunr is a light weight implementation of <a href="https://lucene.apache.org/solr/">Solr</a> the enterprise search platform (off the shelf search engine). With a little bit of jQuery and the lunr library we can cobble together a search page in Cobalt.</p>
+<h2>My Cobalt source directory structure</h2>
+<p>I've shared my own blog's structure as an way to refer to locations within a Cobalt source directory.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">├── _drafts
+</span><span style="background-color:#2b303b;color:#c0c5ce;">├── _layouts
+</span><span style="background-color:#2b303b;color:#c0c5ce;">├── blog
+</span><span style="background-color:#2b303b;color:#c0c5ce;">├── img
+</span><span style="background-color:#2b303b;color:#c0c5ce;">└── js
+</span></pre>
+<p>There should be no surprises here, our primary areas of interest will be the <code>js</code> directory where javascript related assets live. And the root of the directory where my index, about and licenses pages live (all extending the default liquid template).</p>
+<h2>search.liquid</h2>
+<p>I placed my search template in the root of my Cobalt source and it looks like this.</p>
+<h3>frontmatter</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">extends</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">default.liquid
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#bf616a;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">search
+</span><span style="background-color:#2b303b;color:#bf616a;">path</span><span style="background-color:#2b303b;color:#c0c5ce;">:  </span><span style="background-color:#2b303b;color:#a3be8c;">search/
+</span><span style="background-color:#2b303b;color:#c0c5ce;">---
+</span></pre>
+<h3>content</h3>
+<p>The general gist (pun intended) of the template is to create an text input box and a hook for the results to appear in.</p>
+<p>The template is a copy of this <a href="https://gist.github.com/sebz/efddfc8fdcb6b480f567">gist</a> for getting lunr to work with <a href="http://gohugo.io/">hugo</a> (an excellent static site generator written in Go).</p>
+<p>It has some tweaks to get it working with lunr v2.1.0.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">input </span><span style="background-color:#2b303b;color:#8fa1b3;">id</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">search</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#d08770;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">text</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#d08770;">size</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">25</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#d08770;">placeholder</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">search for stuff here...</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">       </span><span style="background-color:#2b303b;color:#c0c5ce;">autofocus&gt;&lt;</span><span style="background-color:#2b303b;color:#bf616a;">br</span><span style="background-color:#2b303b;color:#c0c5ce;"> /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">ul </span><span style="background-color:#2b303b;color:#8fa1b3;">id</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">results</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/</span><span style="background-color:#2b303b;color:#bf616a;">ul</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">script </span><span style="background-color:#2b303b;color:#d08770;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">text/javascript</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">src</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">https://code.jquery.com/jquery-2.1.3.min.js</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;&gt;&lt;/</span><span style="background-color:#2b303b;color:#bf616a;">script</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">script </span><span style="background-color:#2b303b;color:#d08770;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">text/javascript</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#d08770;">src</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">https://unpkg.com/lunr/lunr.js</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;&gt;&lt;/</span><span style="background-color:#2b303b;color:#bf616a;">script</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">script </span><span style="background-color:#2b303b;color:#d08770;">type</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">text/javascript</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;&gt;
+</span><span style="background-color:#2b303b;color:#b48ead;">var </span><span style="background-color:#2b303b;color:#bf616a;">lunrIndex</span><span style="background-color:#2b303b;color:#c0c5ce;">,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">$results</span><span style="background-color:#2b303b;color:#c0c5ce;">,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">pagesIndex</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;">// This is pretty much a copy of 
+</span><span style="background-color:#2b303b;color:#65737e;">// https://gist.github.com/sebz/efddfc8fdcb6b480f567
+</span><span style="background-color:#2b303b;color:#65737e;">// Initialize lunrjs using our generated index file
+</span><span style="background-color:#2b303b;color:#b48ead;">function </span><span style="background-color:#2b303b;color:#8fa1b3;">initLunr</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// First retrieve the index file
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">getJSON</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/js/lunr_docs.json</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">done</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(index) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#bf616a;">pagesIndex </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">index</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#65737e;">// Set up lunrjs by declaring the fields we use
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#65737e;">// Also provide their boost level for the ranking
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#bf616a;">lunrIndex </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#8fa1b3;">lunr</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">field</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                    </span><span style="background-color:#2b303b;color:#c0c5ce;">boost: </span><span style="background-color:#2b303b;color:#d08770;">10
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">field</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#65737e;">// ref is the result item identifier (I chose the page URL)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">ref</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#65737e;">// Feed lunr with each file and let lunr actually index them
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#bf616a;">pagesIndex</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">forEach</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(page) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                    </span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#96b5b4;">add</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">page</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#c0c5ce;">}, </span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">})
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">fail</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(jqxhr, textStatus, error) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#b48ead;">var </span><span style="background-color:#2b303b;color:#bf616a;">err </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">textStatus </span><span style="background-color:#2b303b;color:#c0c5ce;">+ &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">, </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; + </span><span style="background-color:#2b303b;color:#bf616a;">error</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">console.</span><span style="background-color:#2b303b;color:#96b5b4;">error</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Error getting cobalt index file:</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, </span><span style="background-color:#2b303b;color:#bf616a;">err</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;">// Nothing crazy here, just hook up a listener on the input field
+</span><span style="background-color:#2b303b;color:#b48ead;">function </span><span style="background-color:#2b303b;color:#8fa1b3;">initUI</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">$results </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">#results</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">#search</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;).</span><span style="background-color:#2b303b;color:#8fa1b3;">keyup</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#bf616a;">$results</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">empty</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#65737e;">// Only trigger a search when 2 chars. at least have been provided
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">var </span><span style="background-color:#2b303b;color:#bf616a;">query </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">this</span><span style="background-color:#2b303b;color:#c0c5ce;">).</span><span style="background-color:#2b303b;color:#8fa1b3;">val</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">query</span><span style="background-color:#2b303b;color:#c0c5ce;">.length &lt; </span><span style="background-color:#2b303b;color:#d08770;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#b48ead;">return</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">var </span><span style="background-color:#2b303b;color:#bf616a;">results </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#8fa1b3;">search</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">query</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#8fa1b3;">renderResults</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">results</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;">/**
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">* Trigger a search in lunr and transform the result
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">*
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">* @param  {String} query
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">* @return {Array}  results
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">*/
+</span><span style="background-color:#2b303b;color:#b48ead;">function </span><span style="background-color:#2b303b;color:#8fa1b3;">search</span><span style="background-color:#2b303b;color:#c0c5ce;">(query) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// Find the item in our index corresponding to the lunr one to have more 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// info
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// Lunr result: 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">//  {ref: &quot;/section/page1&quot;, score: 0.2725657778206127}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// Our result:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">//  {title:&quot;Page1&quot;, href:&quot;/section/page1&quot;, ...}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">return </span><span style="background-color:#2b303b;color:#bf616a;">lunrIndex</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">search</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">query</span><span style="background-color:#2b303b;color:#c0c5ce;">).</span><span style="background-color:#2b303b;color:#8fa1b3;">map</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(result) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#b48ead;">return </span><span style="background-color:#2b303b;color:#bf616a;">pagesIndex</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">filter</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(page) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                </span><span style="background-color:#2b303b;color:#b48ead;">return </span><span style="background-color:#2b303b;color:#bf616a;">page</span><span style="background-color:#2b303b;color:#c0c5ce;">.href === </span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.ref;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">})[</span><span style="background-color:#2b303b;color:#d08770;">0</span><span style="background-color:#2b303b;color:#c0c5ce;">];
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;">/**
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">* Display the 10 first results
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">*
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">* @param  {Array} results to display
+</span><span style="background-color:#2b303b;color:#65737e;">    </span><span style="background-color:#2b303b;color:#65737e;">*/
+</span><span style="background-color:#2b303b;color:#b48ead;">function </span><span style="background-color:#2b303b;color:#8fa1b3;">renderResults</span><span style="background-color:#2b303b;color:#c0c5ce;">(results) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">if </span><span style="background-color:#2b303b;color:#c0c5ce;">(!</span><span style="background-color:#2b303b;color:#bf616a;">results</span><span style="background-color:#2b303b;color:#c0c5ce;">.length) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">return</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#65737e;">// Only show the ten first results
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">results</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">slice</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">0</span><span style="background-color:#2b303b;color:#c0c5ce;">, </span><span style="background-color:#2b303b;color:#d08770;">10</span><span style="background-color:#2b303b;color:#c0c5ce;">).</span><span style="background-color:#2b303b;color:#8fa1b3;">forEach</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">(result) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#b48ead;">var </span><span style="background-color:#2b303b;color:#bf616a;">$result </span><span style="background-color:#2b303b;color:#c0c5ce;">= </span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">&lt;li style=</span><span style="background-color:#2b303b;color:#96b5b4;">\&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">list-style:none;</span><span style="background-color:#2b303b;color:#96b5b4;">\&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">&gt;</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;); </span><span style="background-color:#2b303b;color:#65737e;">// FUUUUUU!
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#bf616a;">$result</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">append</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">&lt;a&gt;</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">href: </span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.href,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">text: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">» </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; + </span><span style="background-color:#2b303b;color:#bf616a;">result</span><span style="background-color:#2b303b;color:#c0c5ce;">.title
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">}));
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#bf616a;">$results</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#8fa1b3;">append</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">$result</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;">// Let&#39;s get started
+</span><span style="background-color:#2b303b;color:#8fa1b3;">initLunr</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#bf616a;">$</span><span style="background-color:#2b303b;color:#c0c5ce;">(document).</span><span style="background-color:#2b303b;color:#8fa1b3;">ready</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">function</span><span style="background-color:#2b303b;color:#c0c5ce;">() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#8fa1b3;">initUI</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/</span><span style="background-color:#2b303b;color:#bf616a;">script</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;
+</span></pre>
+<h2>An artisanal lunr document collection</h2>
+<p>To get my proof of concept going, I needed to feed lunr a distilled form of my blog posts, which I called <code>lunr_docs.json</code> and stored it in <code>/js</code>. In an earlier version of this post, I mistakenly referred to this as the lunr index.</p>
+<p>It's the data that will be used to generate lunr's index. The index has different structure that we'll learn about in <a href="/adding-search-to-your-cobalt-site-part-two">part two</a>.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">[{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Useful commit messages</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/2017/useful-commit-messages/</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;"> Keeping a copy of this excellent bit of advice until I&#39;ve committed (no pun) it to memory. </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Add reading time in Cobalt</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/2017/add-reading-time/</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;"> I wanted to add an approximate reading time to each of my blog posts, like those seen in medium posts. </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Using a custom domain with GitHub Pages</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/2017/gh-pages-custom-domain/</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;"> It took far too long to work out how to do this on the GitHub help pages... </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Using Cobalt with GitHub pages</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/2017/cobalt-github/</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;"> It turns out using Cobalt and your personal GitHub page is a bit trickier to setup. Your personal GitHub page as oppose to your repo GitHub page, must have the content in the master branch. Repository/Project GitHub pages can live in a subdir of default branch i.e. docs </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}, {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">title</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">MacBook Air Setup</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">href</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/2017/mba-setup/</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">content</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;"> Here&#39;s my current setup for my MacBook Air Setup. I use a range of tools like homebrew, Visual Studio Code and vim. </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}]
+</span></pre>
+<p>The format of the document collection is fairly trivial and only has a very small fragment of the blog post, which will affect searching.</p>
+<p>Incidentally the <code>boost</code> property for the <code>title</code> field in the search template is probably superflorous as it's the only item being searched again. The original source for the code also utilised a <code>tag</code> field, and <code>boost</code> allows you to give a weighting for which field should be favoured when searching the index.</p>
+<p>As you can imagine hand crafting an document collection is a bit lo-fi, so if you want to see what I used in the end (another liquid template), check out <a href="/2017/adding-search-to-your-cobalt-site-part-two">part two</a> of this blog post.</p>
+<h2>Putting it all together</h2>
+<p>Once you've created the search template and the lunr index, all you need to do is perform your usual <code>cobalt build</code> workflow.</p>
+<p>If you've followed my structure, your search page can be found in <code>/search</code>. Search results should appear immediately as you start to type in the input box.</p>
+<h2>But is it webscale?</h2>
+<p>I have no idea, I don't have a large enough volume of data to test against. However lunr v2.x's <code>lunr.Index.load</code> function allows you to load a pre-built index, but this does add an extra of complexity. And at time of writing will require either node.js or some form of v8 context to generate it. The idea is that you index the document collection and serialise the index generated.</p>
+<p>More details can be found <a href="https://lunrjs.com/guides/index_prebuilding.html">here</a>.</p>
+<h2>Anything else?</h2>
+<p>I'd love to remove the dependency on jQuery, but to be fair I can't be arsed to rewrite in vanilla js as it just works ™. Saying that, it has got me thinking perhaps, I should create a liquid-rust extension (not sure if it'll be a tag, filter or other) to generate vanilla js for things that causes people to reach for <a href="http://youmightnotneedjquery.com">jQuery</a>.</p>
+<p>Also I have no idea why the damn input box is so small.</p>
+<p>Any guidence or help with either of these two issues would be greatly appreciated.</p>
+<h2>Updates</h2>
+<p>2017-06-21 - Change references to the lunr index to the lunr document collection.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

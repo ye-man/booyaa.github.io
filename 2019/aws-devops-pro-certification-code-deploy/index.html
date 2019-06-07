@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Code Deploy</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Code Deploy</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Mar 29, 2019 - Reading time: 9 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>Code Build is a managed deployment service.</p>
+<h2>Why?</h2>
+<p>Deployment services are often part of the build farm so would also contribute to infrastructure expenditure.</p>
+<h2>When?</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">SDLC automation
+</span><span style="background-color:#2b303b;color:#c0c5ce;">~~~~~~~~~~~~~~~~
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">CodeCommit -&gt; CodeBuild -&gt; [CodeDeploy] -&gt; ???
+</span></pre>
+<h2>How?</h2>
+<p>This is based around the <a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/tutorials-auto-scaling-group.html">tutorial</a> for deploying to an EC2 Auto Scaling Group. The key difference is that I've condensed it to only include instructions for using on Linux/MacOS based machine using the Amazon v2 AMI.</p>
+<h3>Creating the CodeDeploy service role and EC2 IAM Instance Profile</h3>
+<p>This is part of the <a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-codedeploy.html">Getting Started</a> guide.</p>
+<p>N.B. We've opted to use the managed policy for deploying to EC2/On-Premises compute platform.</p>
+<p>Copy the JSON object below and paste into a new file called <code>CodeDeployDemo-Trust.json</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Version</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2012-10-17</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Statement</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Sid</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Effect</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Allow</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Principal</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Service</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">codedeploy.amazonaws.com</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Action</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">sts:AssumeRole</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">aws iam create-role \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">--role-name CodeDeployServiceRole \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">--assume-role-policy-document file:</span><span style="background-color:#2b303b;color:#65737e;">//CodeDeployDemo-Trust.json
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">aws iam attach-role-policy \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">--role-name CodeDeployServiceRole \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">--policy-arn arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
+</span></pre>
+<p>Copy the JSON object below and paste into a file called <code>CodeDeployDemo-EC2-Trust.json</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Version</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2012-10-17</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Statement</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Sid</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Effect</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Allow</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Principal</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Service</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">ec2.amazonaws.com</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">},
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Action</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">sts:AssumeRole</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>Copy the JSON object below and paste into a file called <code>CodeDeployDemo-EC2-Permissions.json</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Version</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">2012-10-17</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Statement</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">{
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Action</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: [
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">s3:Get*</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">              </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">s3:List*</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">],
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Effect</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Allow</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">          </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Resource</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">*</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre><pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> iam create-role \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--role-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--assume-role-policy-document</span><span style="background-color:#2b303b;color:#c0c5ce;"> file://CodeDeployDemo-EC2-Trust.json
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> iam put-role-policy \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--role-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--policy-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Permissions 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--policy-document</span><span style="background-color:#2b303b;color:#c0c5ce;"> file://CodeDeployDemo-EC2-Permissions.json
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> iam create-instance-profile \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-profile-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> iam add-role-to-instance-profile \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-profile-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--role-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile
+</span></pre>
+<h3>Create the autoscaling group (ASG)</h3>
+<p>Copy the script below and paste into a new file called <code>instance-setup.sh</code>. This will install the CodeDeploy agent will work deploy the application to the instances associated by the Deployment Group (via the ASG).</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#65737e;">#!/bin/bash
+</span><span style="background-color:#2b303b;color:#8fa1b3;">yum</span><span style="background-color:#2b303b;color:#bf616a;"> -y</span><span style="background-color:#2b303b;color:#c0c5ce;"> update
+</span><span style="background-color:#2b303b;color:#8fa1b3;">yum</span><span style="background-color:#2b303b;color:#c0c5ce;"> install</span><span style="background-color:#2b303b;color:#bf616a;"> -y</span><span style="background-color:#2b303b;color:#c0c5ce;"> ruby
+</span><span style="background-color:#2b303b;color:#96b5b4;">cd</span><span style="background-color:#2b303b;color:#c0c5ce;"> /home/ec2-user
+</span><span style="background-color:#2b303b;color:#8fa1b3;">curl</span><span style="background-color:#2b303b;color:#bf616a;"> -O</span><span style="background-color:#2b303b;color:#c0c5ce;"> https://aws-codedeploy-????.s3.amazonaws.com/latest/install
+</span><span style="background-color:#2b303b;color:#8fa1b3;">chmod</span><span style="background-color:#2b303b;color:#c0c5ce;"> +x ./install
+</span><span style="background-color:#2b303b;color:#8fa1b3;">./install</span><span style="background-color:#2b303b;color:#c0c5ce;"> auto
+</span></pre>
+<p>Edit <code>????</code> to reflect your region i.e. if your region is Paris then the value would be <code>eu-west-3</code>.</p>
+<p>Environment variables we want to define are:</p>
+<ul>
+<li>AMI_ID = The Amazon v2 AMI for your region</li>
+<li>KEY_NAME = Your Key Pair for the region</li>
+<li>AZ = The available zone(s) for our region</li>
+</ul>
+<p>Here are a few aws cli commands to help you get the right values for your own environment.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#65737e;"># Find the Amazon v2 AMI for your region
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ec2 describe-images</span><span style="background-color:#2b303b;color:#bf616a;"> --owners</span><span style="background-color:#2b303b;color:#c0c5ce;"> amazon \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--filters </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">Name=name,Values=amzn2-ami-hvm-2.0.????????-x86_64-gp2</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">Name=state,Values=available</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> json | \
+</span><span style="background-color:#2b303b;color:#8fa1b3;">jq</span><span style="background-color:#2b303b;color:#bf616a;"> -r </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">.Images | sort_by(.CreationDate) | last(.[]).ImageId</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># List key pairs in your region
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ec2 describe-key-pairs | </span><span style="background-color:#2b303b;color:#8fa1b3;">jq</span><span style="background-color:#2b303b;color:#bf616a;"> -r </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">.KeyPairs[].KeyName | sort_by(.CreationDate)</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#65737e;"># List availability zones for your region
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ec2 describe-availability-zones
+</span></pre>
+<p>Create the launch configuration:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">AMI_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=</span><span style="background-color:#2b303b;color:#a3be8c;">__FILL_ME_IN__
+</span><span style="background-color:#2b303b;color:#bf616a;">KEY_NAME</span><span style="background-color:#2b303b;color:#c0c5ce;">=</span><span style="background-color:#2b303b;color:#a3be8c;">__FILE_ME_IN__
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling create-launch-configuration \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--launch-configuration-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Configuration \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--image-id </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">AMI_ID </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--key-name </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">KEY_NAME </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--iam-instance-profile</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-EC2-Instance-Profile \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-type</span><span style="background-color:#2b303b;color:#c0c5ce;"> t2.micro \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--user-data</span><span style="background-color:#2b303b;color:#c0c5ce;"> file://instance-setup.sh
+</span></pre>
+<p>Create the autoscaling group:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#96b5b4;">set</span><span style="background-color:#2b303b;color:#c0c5ce;"> AZ eu-west-3a
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling create-auto-scaling-group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--launch-configuration-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Configuration \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--min-size</span><span style="background-color:#2b303b;color:#c0c5ce;"> 1 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--max-size</span><span style="background-color:#2b303b;color:#c0c5ce;"> 1 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--desired-capacity</span><span style="background-color:#2b303b;color:#c0c5ce;"> 1 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--availability-zones </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">AZ
+</span></pre>
+<p>Run the following command to check on the state of your ASG. Proceed to the next step when the status is &quot;Healthy Inservice&quot;:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling describe-auto-scaling-groups \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-names</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">AutoScalingGroups[0].Instances[*].[HealthStatus, LifecycleState]</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text
+</span></pre>
+<h2>Deploy the Application to the ASG</h2>
+<p>Environment variables we want to define are:</p>
+<ul>
+<li>SERVICE_ROLE_ARN = The Service Role we created at the beginning of the lab</li>
+<li>REGION = Our region</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">SERVICE_ROLE_ARN</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> iam get-role</span><span style="background-color:#2b303b;color:#bf616a;"> --role-name</span><span style="background-color:#2b303b;color:#a3be8c;"> CodeDeployServiceRole</span><span style="background-color:#2b303b;color:#bf616a;"> --query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Role.Arn</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#bf616a;"> --output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#8fa1b3;">REGION</span><span style="background-color:#2b303b;color:#c0c5ce;"> eu-west-3
+</span><span style="background-color:#2b303b;color:#8fa1b3;">BUCKET_NAME</span><span style="background-color:#2b303b;color:#c0c5ce;"> aws-codedeploy-$</span><span style="background-color:#2b303b;color:#bf616a;">REGION
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> deploy create-application</span><span style="background-color:#2b303b;color:#bf616a;"> --application-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> SimpleDemoApp
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> deploy create-deployment-group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--application-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> SimpleDemoApp \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-groups</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-group-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> SimpleDemoDG \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-config-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDefault.OneAtATime \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--service-role-arn </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">SERVICE_ROLE_ARN
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#bf616a;">DEPLOYMENT_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> deploy create-deployment \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--application-name</span><span style="background-color:#2b303b;color:#a3be8c;"> SimpleDemoApp \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-config-name</span><span style="background-color:#2b303b;color:#a3be8c;"> CodeDeployDefault.OneAtATime \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-group-name</span><span style="background-color:#2b303b;color:#a3be8c;"> SimpleDemoDG \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--s3-location</span><span style="background-color:#2b303b;color:#a3be8c;"> bucket=</span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">BUCKET_NAME</span><span style="background-color:#2b303b;color:#a3be8c;">,bundleType=zip,key=samples/latest/SampleApp_Linux.zip </span><span style="background-color:#2b303b;color:#c0c5ce;">| </span><span style="background-color:#2b303b;color:#8fa1b3;">jq</span><span style="background-color:#2b303b;color:#bf616a;"> -r</span><span style="background-color:#2b303b;color:#a3be8c;"> .deploymentId)
+</span></pre>
+<h3>AppSpec file</h3>
+<p>Let's download a copy of the sample application and examine the contents:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#8fa1b3;">curl</span><span style="background-color:#2b303b;color:#bf616a;"> -LO</span><span style="background-color:#2b303b;color:#c0c5ce;"> https://s3.$</span><span style="background-color:#2b303b;color:#bf616a;">REGION</span><span style="background-color:#2b303b;color:#c0c5ce;">.amazonaws.com/$</span><span style="background-color:#2b303b;color:#bf616a;">BUCKET_NAME</span><span style="background-color:#2b303b;color:#c0c5ce;">/samples/latest/SampleApp_Linux.zip
+</span><span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#8fa1b3;">unzip</span><span style="background-color:#2b303b;color:#c0c5ce;"> SampleApp_Linux.zip
+</span><span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#8fa1b3;">tree </span><span style="background-color:#2b303b;color:#65737e;"># to see the structure of the app
+</span><span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#8fa1b3;">cat</span><span style="background-color:#2b303b;color:#c0c5ce;"> appspec.yml
+</span></pre>
+<p>The contents of the archive is:</p>
+<ul>
+<li>the web page we'll be deploying via CodeDeploy</li>
+<li>scripts to install/stop/start the web server</li>
+<li><a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file.html">AppSpec</a> file which is what the CodeDeploy agent will use to deploy the webpage to each instance in the deployment group.</li>
+</ul>
+<p>Let's return back to our deployment.</p>
+<p>Keep checking on the deployment until the following command outputs &quot;Succeeded&quot;.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> deploy get-deployment</span><span style="background-color:#2b303b;color:#bf616a;"> --deployment-id </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">DEPLOYMENT_ID </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">deploymentInfo.status</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text
+</span></pre>
+<p>Tip: If you get an access denied error at the Download stage, the EC2 IAM Instance Profile maybe configured incorrectly or the policy to allow access to S3 wasn't attached.</p>
+<p>Let's verify that our deployment worked, by getting the public address of our instance.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">INSTANCE_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> autoscaling describe-auto-scaling-groups \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-names</span><span style="background-color:#2b303b;color:#a3be8c;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">AutoScalingGroups[0].Instances[*].InstanceId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#bf616a;"> --output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">curl </span><span style="background-color:#2b303b;color:#c0c5ce;">$(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ec2 describe-instances \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-id </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">INSTANCE_ID </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Reservations[0].Instances[0].PublicDnsName</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text)
+</span></pre>
+<h3>Increase the number of instances in the ASG</h3>
+<p>We'll increase the instance count by ASG to bring it to a total of 2.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling update-auto-scaling-group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--min-size</span><span style="background-color:#2b303b;color:#c0c5ce;"> 2 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--max-size</span><span style="background-color:#2b303b;color:#c0c5ce;"> 2 \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--desired-capacity</span><span style="background-color:#2b303b;color:#c0c5ce;"> 2
+</span></pre>
+<p>Keep checking on the instances in the ASG, only proceed to the next step when they are both &quot;Healthy InService&quot;.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling describe-auto-scaling-groups \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-names</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">AutoScalingGroups[0].Instances[*].[HealthStatus, LifecycleState]</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text
+</span></pre>
+<p>Now check the status of the deployment, it should be &quot;Succeeded&quot;.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">DEPLOYMENT_ID</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> deploy list-deployments \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--application-name</span><span style="background-color:#2b303b;color:#a3be8c;"> SimpleDemoApp \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-group-name</span><span style="background-color:#2b303b;color:#a3be8c;"> SimpleDemoDG \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">deployments</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; | </span><span style="background-color:#2b303b;color:#8fa1b3;">jq</span><span style="background-color:#2b303b;color:#bf616a;"> -r </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">last(.[])</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> deploy get-deployment \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--deployment-id </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">DEPLOYMENT_ID </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">deploymentInfo.[status, creator]</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text  
+</span></pre>
+<p>Next, let's curl all the instances to verify we've got a working site.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">INSTANCE_IDS</span><span style="background-color:#2b303b;color:#c0c5ce;">=$</span><span style="background-color:#2b303b;color:#a3be8c;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#a3be8c;"> autoscaling describe-auto-scaling-groups \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-names</span><span style="background-color:#2b303b;color:#a3be8c;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">AutoScalingGroups[0].Instances[*].InstanceId</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#a3be8c;">\
+</span><span style="background-color:#2b303b;color:#a3be8c;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#a3be8c;"> text)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-ids </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">INSTANCE_IDS </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Reservations[0].Instances[0].PublicDnsName</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--output</span><span style="background-color:#2b303b;color:#c0c5ce;"> text
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> ec2 describe-instances \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--instance-ids </span><span style="background-color:#2b303b;color:#c0c5ce;">$</span><span style="background-color:#2b303b;color:#bf616a;">INSTANCE_IDS </span><span style="background-color:#2b303b;color:#c0c5ce;">\
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--query </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">Reservations[*].Instances[*].PublicDnsName</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">| </span><span style="background-color:#2b303b;color:#8fa1b3;">jq</span><span style="background-color:#2b303b;color:#bf616a;"> -r</span><span style="background-color:#2b303b;color:#c0c5ce;"> .</span><span style="background-color:#2b303b;color:#b48ead;">[</span><span style="background-color:#2b303b;color:#c0c5ce;">]</span><span style="background-color:#2b303b;color:#b48ead;">[</span><span style="background-color:#2b303b;color:#c0c5ce;">] | xargs curl {}
+</span></pre>
+<h2>Clean up</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling delete-auto-scaling-group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--force-delete
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> autoscaling delete-auto-scaling-group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--auto-scaling-group-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> CodeDeployDemo-AS-Group \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--force-delete
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#8fa1b3;">aws</span><span style="background-color:#2b303b;color:#c0c5ce;"> deploy delete-application \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#8fa1b3;">--application-name</span><span style="background-color:#2b303b;color:#c0c5ce;"> SimpleDemoApp
+</span></pre>
+<h2>API and CLI features and verbs</h2>
+<h3>Features</h3>
+<ul>
+<li>Deployments
+<ul>
+<li>Deployment groups</li>
+<li>Application revisions</li>
+</ul>
+</li>
+<li>Applications</li>
+<li>Deployment configurations</li>
+<li>On-premise instances</li>
+</ul>
+<h3>Verbs (CRUD)</h3>
+<ul>
+<li>create</li>
+<li>batch-get/get/list/describe</li>
+<li>update/put</li>
+<li>delete</li>
+</ul>
+<h3>Outliers</h3>
+<ul>
+<li>register-on-premises-instance</li>
+<li>batch-get-on-premises-instances</li>
+<li>add-tags-to-on-premises-instances</li>
+<li>remove-tags-from-on-premises-instances</li>
+<li>deregister-on-premises-instance</li>
+<li>continue-deployment</li>
+<li>stop-deployment</li>
+<li>delete-git-hub-account-token</li>
+<li>deregister</li>
+<li>install</li>
+<li>push</li>
+<li>register</li>
+<li>register-application-revision</li>
+<li>put-lifecycle-event-hook-execution-status</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-code-commit/">Code Commit</a></li>
+<li><a href="/2019/aws-devops-pro-certification-code-build/">Code Build</a></li>
+<li>Code Deploy</li>
+<li><a href="/2019/aws-devops-pro-certification-code-pipeline">Code Pipeline</a></li>
+</ul>
+</li>
+<li>Domain 2: Configuration Management and Infrastructure as Code</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

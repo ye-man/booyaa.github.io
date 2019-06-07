@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Add support for tags to Cobalt</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Add support for tags to Cobalt</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jul 09, 2017 - Reading time: 2 minutes.</time><br />
+      
+      <p>A while back I started adding a new front matter attribute to all my posts
+called <code>tags</code>. I initially did this to improve my site search indexing (you can
+read about that <a href="/2017/adding-search-to-your-cobalt-site-part-one/">here</a>).</p>
+<p>After spending some time thinking about how to add tags to the site, and I
+think I've come up with a reasonable solution.</p>
+<p>The biggest problem with tags is that you can't easily codegen the template
+like the one I used for the documents collection
+<a href="/2017/adding-search-to-your-cobalt-site-part-two/">feed</a> to seed the lunr
+indexer.</p>
+<p>The code for the tag template looks like this.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/ul&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{% endfor %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{% endfor %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{% endif %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{% break %}&lt;/a&gt;&lt;/li&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">{{ post.title }}&quot;&gt;{{post.permalink }}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">            </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;li&gt;&lt;a href=&quot;/{% if tag == filter_tag %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">{% for tag in tags %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{% assign tags = post.data.tags | replace: &quot; &quot;, &quot;&quot; |  split: &quot;,&quot; %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">{% for post in collections.posts.pages reversed %}&lt;/h1&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;ul&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{{ filter_tag }}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h1&gt;Posts tagged as 
+</span></pre>
+<p>The code is fairly trivially, grab the <code>tags</code> attribute turn it into an array
+of tags and then loop over it and add a link if the tag is found.</p>
+<p>If you were to create a template per tag, there's a risk of code duplication.
+After that, it's only a matter of time, when you &quot;fix&quot; one template, but forget
+apply to the others.</p>
+<p>You could mitigate against this by recreating all the tag pages at build time.
+I may revisit this solution at a later date to see if there's any other
+benefits that might have been overlooked.</p>
+<p>In the end I decided to use the <code>include</code> liquid tag to reuse the tag template
+code, again I got the idea from Johann's excellent <a href="http://johannh.me">blog</a>
+where he broke up his default layout into components using <code>include</code>. One thing
+to note about using the <code>include</code> tag is that you shouldn't include a front
+matter section otherwise this will also be rendered.</p>
+<h2>tags/cobalt.liquid</h2>
+<h3>front matter</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">extends: default.liquid
+</span><span style="background-color:#2b303b;color:#c0c5ce;">title: booyaa&#39;s boggy bloggy
+</span><span style="background-color:#2b303b;color:#c0c5ce;">path: tags/cobalt/
+</span><span style="background-color:#2b303b;color:#c0c5ce;">comment: collection of cobalt related posts
+</span><span style="background-color:#2b303b;color:#c0c5ce;">---
+</span></pre>
+<p>The only item of note here is the path, I've decided to utilise <code>tags</code> as a
+sub-path. I've not created a index page for this sub-path, so it'll give a 404
+for now.</p>
+<h3>content</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{% include &quot;_tag.liquid&quot; %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">{% assign filter_tag = &quot;cobalt&quot; %}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span></pre>
+<p>The tag page content literally define the tag filter that will be used by the
+<code>tags</code> template and then includes the <code>tags</code> template.</p>
+<p>The end result can be found <a href="/tags/cobalt/">here</a>. I should add that, I'm still
+thinking about a way to add this link within related posts, but I think that's
+another problem altogether! The source code can be found
+<a href="https://github.com/booyaa/booyaa.github.io">here</a>.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

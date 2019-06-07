@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Craft as a Fox</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Craft as a Fox</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Sep 28, 2018 - Reading time: 5 minutes.</time><br />
+      
+      <p><em>This is part of my &quot;Blogging my Homework&quot; blog post series, the introductory post can be found <a href="/2018/blogging-my-homework/">here</a>.</em></p>
+<p>Caveat emptor: any errors or misunderstanding around concepts will almost certainly be my own rather than my employee (Made Tech). This is after all my own study and mistakes do occur during learning.</p>
+<p><em>Updated 26th of September:</em> I passed by Fox assessment!</p>
+<h1>Web App Dev Core Skills Level 2 aka Fox</h1>
+<p>This is the next level after Hedgehog, the introductory post for this core skill can be found on my previous post called <a href="/2018/web_app_dev_core_skill_hedgehog_part_one">Web App Development Core Skill: Hedgehog - Part One</a>. The specific of Fox can be found on <a href="https://learn.madetech.com/core-skills/web-application-development-with-react/#fox">learn.madetech.com</a></p>
+<p>Unlike the previous level, this assessment mostly deals with purely the practical side of React development. I say mostly because there is a question around the uses of the <code>key</code> prop.</p>
+<h2>Assumptions</h2>
+<p>In this assessment, you will be expected to continue working on your application that was started in Hedgehog.</p>
+<h3>Storybook</h3>
+<p>As part of my actual assessment, I decided to use <a href="https://storybook.js.org/basics/guide-react/">Storybook</a> to demonstrate my components whilst also showing the code in my editor. For the blog post, I made a decision to instead use <a href="https://codepen.io">codepen.io</a>, because I felt it was more example to show code examples rather than demonstrate Storybook.</p>
+<p>But fear, not I will be writing a separate blog post extolling the virtues of Storybook. It's really quite amazing!</p>
+<h2>Getting crafty with React</h2>
+<p>This assessment sees you creating components in your application and you will be assessed on the following:</p>
+<ul>
+<li>Contains a component without any props or state</li>
+<li>Contains a use of the <code>key</code> prop</li>
+<li>Contains a component which makes use of a function passed in as a prop</li>
+<li>Contains a component which renders differently based on state changes</li>
+<li>Contains a component which changes state in response to an onClick event</li>
+<li>Contains a component which has been styled without global styles</li>
+<li>Contains a component which renders differently based on the following prop types being passed in:
+<ul>
+<li>A boolean</li>
+<li>A string</li>
+<li>The <code>children</code> prop</li>
+</ul>
+</li>
+</ul>
+<p>There was a small theoretic piece added the assessment around what the <code>key</code> prop Is used for. We’ll address this when we demo “Contains a use of the  <code>key</code> prop”.</p>
+<p>Now let’s tackle each part of the assessment as a separate subsection!</p>
+<h3>A word about the example code</h3>
+<p>All the example code that follows assumes the HTML has a div with the id of <code>root</code>:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">&lt;</span><span style="background-color:#2b303b;color:#bf616a;">div </span><span style="background-color:#2b303b;color:#8fa1b3;">id</span><span style="background-color:#2b303b;color:#c0c5ce;">=&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">root</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;&gt;&lt;/</span><span style="background-color:#2b303b;color:#bf616a;">div</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt;
+</span></pre>
+<p>The example code snippets you'll see is just the JSX part that creates the component. A full working demo can be found in the codepen link.</p>
+<h3>Contains a component without any props or state</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">const element = &lt;h1&gt;Hello, World!&lt;/h1&gt;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ReactDOM.render(element, document.getElementById(&#39;root&#39;));
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/rZbMQj">codepen.io</a></p>
+<h3>Contains a use of the key prop</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">function NumberList(props) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">const numbers = props.numbers;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">const listItems = numbers.map((number) =&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;li key={number.toString()}&gt;{number}&lt;/li&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">return (&lt;ul&gt;{listItems}&lt;/ul&gt;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">const numbers = [1, 2, 3, 4, 5];
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ReactDOM.render(
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;NumberList numbers={numbers} /&gt;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">document.getElementById(&quot;root&quot;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/WgWaxQ?editors=0010">codepen.io</a></p>
+<p>References</p>
+<ul>
+<li><a href="https://reactjs.org/docs/lists-and-keys.html">Lists and Keys – React</a>
+<ul>
+<li><a href="https://medium.com/@robinpokorny/index-as-a-key-is-an-anti-pattern-e0349aece318">Index as a key is an anti-pattern – Robin Pokorny – Medium</a></li>
+<li><a href="https://reactjs.org/docs/reconciliation.html#recursing-on-children">Reconciliation – React</a></li>
+</ul>
+</li>
+</ul>
+<h3>Contains a component which makes use of a function passed in as a prop</h3>
+<p>See the example in the next section.</p>
+<h3>Contains a component which renders differently based on the following prop types being passed in</h3>
+<ul>
+<li>A boolean</li>
+<li>A string</li>
+<li>The children prop</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">class Printer extends React.Component {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">constructor(props) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">super(props);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">render() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">let childCount = React.Children.count(this.props.children);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">let message;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">if (childCount &lt; 1) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">message = (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;span&gt;js type: {typeof(this.props.value)}&lt;/span&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">} else {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">message = (&lt;span&gt;not a js type: {this.props.children}&lt;/span&gt;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">return (&lt;h1&gt;{message}&lt;/h1&gt;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">function Func() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">return 1;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">function Child() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">return &#39;I am a child component!&#39;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">function App() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">return (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Printer value=&quot;i am a string&quot; /&gt;&lt;br /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Printer value={true} /&gt;&lt;br /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Printer value={Func} /&gt;&lt;br /&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;Printer&gt;&lt;Child/&gt;&lt;/Printer&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ReactDOM.render(&lt;App /&gt;, document.getElementById(&#39;root&#39;));
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/rZbMoj">codepen.io</a></p>
+<h3>Contains a component which renders differently based on state changes</h3>
+<p>This was shamelessly stolen from the official <a href="https://reactjs.org/docs/state-and-lifecycle.html">React</a> docs!</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">class Clock extends React.Component {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">constructor(props) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">super(props);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">this.state = {date: new Date()};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">componentDidMount() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">this.timerID = setInterval(
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">() =&gt; this.tick(),
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">1000
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">componentWillUnmount() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">clearInterval(this.timerID);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">tick() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">this.setState( {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">date: new Date()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">});
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">render() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">return (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h1&gt;{this.state.date.toLocaleTimeString()}&lt;/h1&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;h2&gt;This component is changing based on it&#39;s state&lt;/h2&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/BOEqyg?editors=0010">codepen.io</a></p>
+<h3>Contains a component which changes state in response to an onClick event</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">class App extends React.Component {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">constructor(props) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">super(props);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">this.state = { playing: false };
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">playPause = () =&gt; {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">if (this.state.playing) {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">this.setState({ playing: false });
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">} else {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">this.setState({ playing: true });
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">render() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">const { playing } = this.state;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">return (
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;div className=&quot;app&quot;&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;button onClick={this.playPause}&gt;{playing ? &quot;Pause&quot; : &quot;Play&quot;}&lt;/button&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">&lt;/div&gt;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ReactDOM.render(&lt;App /&gt;, document.getElementById(&quot;root&quot;));
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/WgWgme?editors=0010">codepen.io</a></p>
+<p>References:</p>
+<ul>
+<li><a href="https://reactjs.org/docs/state-and-lifecycle.html">State and Lifecycle – React</a></li>
+</ul>
+<h3>Contains a component which has been styled without global styles</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">const divStyle = {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">color: &#39;blue&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">function App() {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">return &lt;h1 style={divStyle}&gt;Inner Style Example&lt;/h1&gt;;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ReactDOM.render(&lt;App /&gt;, document.getElementById(&#39;root&#39;));
+</span></pre>
+<p><a href="https://codepen.io/booyaa/pen/NLmLEZ?editors=0010#0">codepen.io</a></p>
+<p>References:</p>
+<ul>
+<li><a href="https://reactjs.org/docs/dom-elements.html#style">DOM Elements – React</a></li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

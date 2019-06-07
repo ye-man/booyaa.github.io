@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Configuration Management and Infrastructure as Code introduction</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Configuration Management and Infrastructure as Code introduction</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">May 11, 2019 - Reading time: 3 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>What does the exam guide say?</h2>
+<p>To pass this domain, you'll need to know the following:</p>
+<ul>
+<li>Determine deployment services based on deployment needs</li>
+<li>Determine application and infrastructure deployment models based on business needs</li>
+<li>Apply security concepts in the automation of resource provisioning</li>
+<li>Determine how to implement lifecycle hooks on a deployment</li>
+<li>Apply concepts required to manage systems using AWS configuration management tools and services</li>
+</ul>
+<h2>What whitepapers are relevant?</h2>
+<p>According to the <a href="https://aws.amazon.com/whitepapers/#dev-ops">AWS Whitepapers for DevOps</a> we should look at the following documents:</p>
+<ul>
+<li><a href="https://d1.awsstatic.com/whitepapers/DevOps/infrastructure-as-code.pdf">Infrastructure as Code (39 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/AWS_DevOps.pdf">Introduction to DevOps on AWS (20 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/DevOps/practicing-continuous-integration-continuous-delivery-on-AWS.pdf">Practicing Continuous Integration and Continuous Delivery (32 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/jenkins-on-aws.pdf">Jenkins on AWS (48 pages)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/DevOps/import-windows-server-to-amazon-ec2.pdf">Import Windows Server to Amazon EC2 with PowerShell (20 pages)</a></li>
+</ul>
+<h2>What services and products covered in this domain?</h2>
+<p>Useful https://aws.amazon.com/devops/#infrastructureascode</p>
+<ul>
+<li><a href="https://aws.amazon.com/cloudformation/">CloudFormation</a> - This is a templating language that allows you to codify your infrastructure. This is the &quot;Infrastructure as Code&quot; part of this domain.</li>
+<li><a href="https://aws.amazon.com/opsworks/">OpsWorks</a> - This service provides managed versions of Chef and Puppet. These are both industry standard configuration management systems.</li>
+<li><a href="https://aws.amazon.com/elasticbeanstalk/">Elastic Beanstalk</a> - is AWS' Platform as a Service (PaaS) offering.</li>
+<li><a href="https://aws.amazon.com/lambda/">AWS Lambda</a> - A service to run microservices / Serverless functions / Buzzword bingo</li>
+<li><a href="https://aws.amazon.com/ecs/">AWS ECS</a> - Managed container services. IaC (codified)</li>
+<li><a href="https://aws.amazon.com/config/">AWS Config</a> - Auditing services of your AWS services.</li>
+<li><a href="https://aws.amazon.com/managed-services/">AWS Managed Services</a> - Let's AWS manage your AWS!</li>
+</ul>
+<h2>What about other types of documentation?</h2>
+<p>If you have the time, by all means, read the User Guides, but they are usually a couple of hundred pages. Alternatively, get familiar with the services using the FAQs:</p>
+<ul>
+<li><a href="https://aws.amazon.com/cloudformation/faqs/">CloudFormation</a></li>
+<li>OpsWorks has multiple FAQs for their various offerings <a href="https://aws.amazon.com/opsworks/chefautomate/faqs/?nc=sn&amp;loc=5">Chef Automate</a>, <a href="https://aws.amazon.com/opsworks/puppetenterprise/faqs/?nc=sn&amp;loc=5">Puppet Enterprise</a> and <a href="https://aws.amazon.com/opsworks/stacks/faqs/?nc=sn&amp;loc=5">Stacks</a></li>
+<li><a href="https://aws.amazon.com/elasticbeanstalk/faqs/">Elastic Beanstalk</a></li>
+<li><a href="https://aws.amazon.com/lambda/faqs/">AWS Lambda</a></li>
+<li><a href="https://aws.amazon.com/ecs/faqs/">AWS ECS</a></li>
+<li><a href="https://aws.amazon.com/config/faq/">AWS Config</a></li>
+<li><a href="https://aws.amazon.com/managed-services/faqs/">AWS Managed Services</a></li>
+</ul>
+<p>You're all expected to know the APIs</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/Welcome.html">CloudFormation</a></li>
+<li>OpsWorks has two APIs <a href="https://docs.aws.amazon.com/opsworks/latest/APIReference/Welcome.html">Stacks</a> and <a href="https://docs.aws.amazon.com/opsworks-cm/latest/APIReference/Welcome.html">Configuration Management</a></li>
+<li><a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/api/Welcome.html">Elastic Beanstalk</a></li>
+<li><a href="https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html">AWS Lambda</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html">AWS ECS</a></li>
+</ul>
+<p>There's no API for AWS Managed Services because this a professional or technical services offering.</p>
+<p>Before you panic, you'll start to spot a pattern with the API verbs.</p>
+<p>And the CLI commands</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html">CloudFormation</a></li>
+<li>OpsWorks has two commands <a href="https://docs.aws.amazon.com/cli/latest/reference/opsworks/index.html">opswork</a> and <a href="https://docs.aws.amazon.com/cli/latest/reference/opsworks-cm/index.html">opswork-cm</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/elasticbeanstalk/index.html">Elastic Beanstalk</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/lambda/index.html">AWS Lambda</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/ecs/index.html">AWS ECS</a></li>
+</ul>
+<p>There's no CLI for AWS Managed Services because there's no corresponding API.</p>
+<p>As with the API, there are patterns to the commands.</p>
+<h2>Configu-what? And Infra as Who?</h2>
+<p>In the previous domain, we learnt that SDLC specifically the continuous delivery pipeline ensures that our code's integrity is being tested repeatedly and in a consistent manner.</p>
+<p>Now we'll see how we can achieve something similar to the underlying infrastructure that powers both our build and hosting of our applications.</p>
+<p>Configuration Management is a systematic way of handling changes to servers in such as a way that it maintains integrity over time. The key thing to remember is that often we talking about maintaining lots of servers i.e. more than one. To do this manually introduces risks that steps will be missed and inconsistencies in your environments will occur.</p>
+<p>By automating this process for server builds and maintenance we reduce this risk. Whilst you could do this yourself through a series of shell scripts and ssh, it's better to use a dedicated tool, some popular choices are Puppet, Chef, and, Salt Stack and Ansible.</p>
+<p>If Configuration Management ensures that our servers are patched to the correct version of operating system and contain the correct software to operate, then Infrastructure as Code ensures that provisioning of <em>drum roll</em> Infrastructure is done as reproducible steps. Tools you can expect to find in this space are Terraform, Azure Resource Manager and of course CloudFormation.</p>
+<p>Both configuration management and infrastructure as code are often expressed as templates or a programming language. This makes both ideal candidates for using version control systems like Git to track changes.</p>
+<p>Our next blog post will be about CloudFormation</p>
+<h3>AWS DevOps Pro Certification Blog Post Series</h3>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-cloudformation">CloudFormation</a></li>
+<li><a href="/2019/aws-devops-pro-certification-elastic-beanstalk">Elastic Beanstalk</a></li>
+<li><a href="/2019/aws-devops-pro-certification-opsworks">OpsWorks</a></li>
+<li><a href="/2019/aws-devops-pro-certification-lambda/">AWS Lambda</a></li>
+<li><a href="/2019/aws-devops-pro-certification-ecs/">AWS ECS</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Config</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Managed Services</a></li>
+</ul>
+</li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging">Monitoring and Logging</a></li>
+<li>Domain 4: <a href="/2019/aws-devops-pro-certification-policy-standards-automation/">Policies and Standards Automation</a></li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

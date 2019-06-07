@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Open source tools and work proxies</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Open source tools and work proxies</h1>
+       
+      
+      
+      
+          
+				 
+
+			<time pubdate="pubdate">Feb 04, 2018 - Reading time: about a minute.</time><br />
+      
+      <p>I often use a lot of open source tooling at work, initially I started with with node and npm (for our front end), and more recently python, Go and of course Rust.</p>
+<p>Unfortunately a lot of tools, expect you to have direct access to the Internet, if you're behind a work proxy most will fail to connect to their registries or pull down code from source control repositories.</p>
+<p>To make matters worse, work proxies often require Windows authentication. So rather than stick your credentials in a plain text file, you might prefer to use something like <a href="https://www.telerik.com/fiddler">Fiddler</a>. Fiddler is an excellent diagnostics tool for troubleshooting web apps, a bonus feature is that it also provides a local proxy (usually listen on port 8888), using your existing browser proxy settings.</p>
+<p>After that, it's just a case of configuring your tools to use this local proxy. Just be mindful that if you can't access websites like <a href="https://github.com/">GitHub</a> or <a href="https://www.npmjs.com/">npm</a> in your browser, you won't magically get access this way, those restrictions will remain in place.</p>
+<p>Here's a list of ways to get your open source tool to work with this local proxy:</p>
+<h2>Environment variables (env vars)</h2>
+<p>Have these setup as a minimum, most tools will look of these env vars and should start working.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">HTTP_PROXY=http://127.0.0.1:8888
+</span><span style="background-color:#2b303b;color:#c0c5ce;">HTTPS_PROXY=http://127.0.0.1:8888
+</span></pre>
+<p>This works with <a href="https://rustup.rs">rustup</a>,</p>
+<h2>npm</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">npm config set proxy http://127.0.0.1:8888
+</span><span style="background-color:#2b303b;color:#c0c5ce;">npm config set https-proxy http://127.0.0.1:8888
+</span></pre>
+<h2>cargo</h2>
+<p>edit <code>%USERPROFILE%\.cargo</code> and add the following:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">[http]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">proxy = &quot;http://127.0.0.1:8888&quot;
+</span></pre>
+<h2>git</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">git config --global http.proxy http://127.0.0.1:8888
+</span></pre>
+<p>This should fix problems with golang and possibly cargo (when pull dependencies).</p>
+<h2>python (Anaconda)</h2>
+<p>edit <code>%USERPROFILE%\.condarc</code> and add the following:</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">channels:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">- defaults
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># Show channel URLs when displaying what is going to be downloaded and
+</span><span style="background-color:#2b303b;color:#c0c5ce;"># in &#39;conda list&#39;. The default is False.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">show_channel_urls: True
+</span><span style="background-color:#2b303b;color:#c0c5ce;">allow_other_channels: True
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">proxy_servers:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">http: http://127.0.0.1:8888
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">https: http://127.0.0.1:8888
+</span></pre>
+<h2>vscode</h2>
+<p>edit your user settings file and add</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">http.proxy</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: &quot;</span><span style="background-color:#2b303b;color:#a3be8c;">http://127.0.0.1:8888</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">http.proxyStrictSSL</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;: </span><span style="background-color:#2b303b;color:#d08770;">false</span><span style="background-color:#2b303b;color:#c0c5ce;">,
+</span></pre>
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

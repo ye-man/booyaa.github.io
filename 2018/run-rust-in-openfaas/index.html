@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>How to run Rust in OpenFaaS</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>How to run Rust in OpenFaaS</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Aug 04, 2018 - Reading time: 6 minutes.</time><br />
+      
+      <p>I’ve been getting into Kubernetes in a big way, this is partly thanks to it being bundled in <a href="https://docs.docker.com/docker-for-mac/kubernetes/">Docker for Mac Edge</a> edition.</p>
+<p>Once I'd learnt the basics via <a href="http://kubernetesbyexample.com/">Kubernetes by Example</a>, I wanted to learn a bit more about the specifics of the Kubernetes that is bundled with Docker. I found Alex Ellis' <a href="https://blog.alexellis.io/docker-for-mac-with-kubernetes/">blog post</a> incredibly helpful.</p>
+<p>I also credit this blog post for getting me into <a href="https://www.openfaas.com/">OpenFaaS</a> and Serverless Functions.</p>
+<p>This blog post expands on a <a href="https://twitter.com/booyaa/status/1023604086644633602">tweet</a> I wrote last sunday:</p>
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Okay time to end this hacking sesh, with Rust in <a href="https://twitter.com/openfaas?ref_src=twsrc%5Etfw">@openfaas</a>! Code is very rough, needs cleaning up before I offer it up as a contribution. I plan to write a blog  post during the week about how I got this working! <a href="https://twitter.com/hashtag/rustlang?src=hash&amp;ref_src=twsrc%5Etfw">#rustlang</a> <a href="https://twitter.com/hashtag/Serverless?src=hash&amp;ref_src=twsrc%5Etfw">#Serverless</a> <a href="https://twitter.com/hashtag/k8s?src=hash&amp;ref_src=twsrc%5Etfw">#k8s</a> <a href="https://t.co/jOSRum8gfa">pic.twitter.com/jOSRum8gfa</a></p>&mdash; ɥǝɯ uıɥsnɯs sı ɥǝddnd loɯs dlɐɥ (@booyaa) <a href="https://twitter.com/booyaa/status/1023604086644633602?ref_src=twsrc%5Etfw">July 29, 2018</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>I had just created a proof of concept Rust function template for OpenFaas.</p>
+<p>Since then I've been able to clean up the template and come up with a more substantial example. At the time I tweeted my success, Alex (OpenFaaS maintainer) told about Erik Stoekl's <a href="https://github.com/ericstoekl/faas-custom-templates">version</a>. It's reassuring to see we didn't differ too greatly.</p>
+<h2>What are Functions</h2>
+<p>Functions in the context of Functions as a Service, or Serverless Functions, becomes the next level of abstraction after Platforms as a Service (PaaS). If you think of PaaS as a way to simplify the software release process: you make changes to code, you merge them into your master branch, PaaS handles packaging, delivery of the software as well as providing servers tailored to your application.</p>
+<p>Functions take this abstraction further, but removing concerns around how your software interacts with its environment. You no longer consider issues of RBAC, Presentation (webserver, stdio), you just write the minimum amount of code to get things done.</p>
+<p>The best summation of what FaaS and to an extent what Microservices are was coined by Ian Cooper. To paraphrase him: Your unit tests are your functions. You do not have concerns about things outside of the function's task.</p>
+<h2>What is OpenFaaS</h2>
+<p>OpenFaaS is an open source implementation of Function as a Service (Serverless Functions, microservices) that you can self host. Rather than list all the various offerings in this space, I'll refer you to the <a href="https://landscape.cncf.io/">Cloud Native Computing Foundation</a>, in particular the <a href="https://landscape.cncf.io/">interactive Landscape</a>.</p>
+<p>You can either deploy existing <a href="https://github.com/openfaas/store">functions</a> or create new ones. If you create new ones, there's a big list of officially supported languages. Alternative you could turn a <a href="https://blog.alexellis.io/cli-functions-with-openfaas/">CLI into function</a>.</p>
+<p>Once I'd given Python and Ruby a go as an introduction, I wanted to see how easy it would be to create a Rust template.</p>
+<h2>Anatomy of an OpenFaaS template</h2>
+<p>A template requires the following:</p>
+<ul>
+<li>a script/program to act as a driver for the function. This code will not be seen or used by end users using your tempate</li>
+<li>a script/program with a <code>handle</code> function that will provide the boilerplate for your end users</li>
+<li>a <code>Dockerfile</code> that will bundle and build the driver and function, as well as installing a watchdog process (more on this later).</li>
+<li>a <code>template.yml</code> which at minimum should provide the programming language of the template and the code to start the handler.</li>
+</ul>
+<h2>Decisions behind the design of the Rust template</h2>
+<p>To create a Rust template, I created two crates (we'll discuss the functionality later on):</p>
+<ul>
+<li>the <code>main</code> crate acts as the driver for the function</li>
+<li>the <code>function</code> crate contains the library with the <code>handle</code> function</li>
+</ul>
+<p>I used <code>cargo new</code> to create the new crates and to provide all the necessary plumbing required for a Rust project.</p>
+<p>Important note about the <code>function</code> crate. OpenFaaS expects to find a folder called <code>function</code>, if you call it anything else it will not copy the boilerplate code when a new function is created using the template.</p>
+<p>The <code>main</code> crate pulls in the <code>function</code> crate as a dependency using a relative path.</p>
+<p><code>Cargo.toml</code> (some sections omitted)</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">[dependencies]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">handler = { path = &quot;../function&quot; }
+</span></pre>
+<p>For the <code>Dockerfile</code>, I went for the <a href="https://hub.docker.com/_/rust/">official</a> stable image of Rust.</p>
+<h3>The flow of function</h3>
+<p>The driver reads standard input and passes to the function.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">use </span><span style="background-color:#2b303b;color:#c0c5ce;">std::io::{</span><span style="background-color:#2b303b;color:#bf616a;">self</span><span style="background-color:#2b303b;color:#c0c5ce;">, Read};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">extern crate</span><span style="background-color:#2b303b;color:#c0c5ce;"> handler;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">fn </span><span style="background-color:#2b303b;color:#8fa1b3;">main</span><span style="background-color:#2b303b;color:#c0c5ce;">() -&gt; io::Result&lt;()&gt; {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> buffer = String::new();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let</span><span style="background-color:#2b303b;color:#c0c5ce;"> stdin = io::stdin();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> handle = stdin.</span><span style="background-color:#2b303b;color:#96b5b4;">lock</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">handle.</span><span style="background-color:#2b303b;color:#96b5b4;">read_to_string</span><span style="background-color:#2b303b;color:#c0c5ce;">(&amp;</span><span style="background-color:#2b303b;color:#b48ead;">mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> buffer)?;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">Ok(())
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>I copied this code from the standard library <a href="https://doc.rust-lang.org/std/io/struct.Stdin.html#examples">documentation</a>.</p>
+<p>The function parses the input and returns its output to the driver.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">pub fn </span><span style="background-color:#2b303b;color:#8fa1b3;">handle</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">req </span><span style="background-color:#2b303b;color:#c0c5ce;">: String) -&gt; String {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">req
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<h2>Demonstration</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">faas-cli template pull https://github.com/booyaa/openfaas-rust-template
+</span><span style="background-color:#2b303b;color:#c0c5ce;">faas-cli new trustinrust --lang rust
+</span></pre>
+<p>Here's what our folder structure looks like.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">├── trustinrust
+</span><span style="background-color:#2b303b;color:#c0c5ce;">│   ├── Cargo.toml
+</span><span style="background-color:#2b303b;color:#c0c5ce;">│   └── src
+</span><span style="background-color:#2b303b;color:#c0c5ce;">│       └── lib.rs
+</span><span style="background-color:#2b303b;color:#c0c5ce;">└── trustinrust.yml
+</span></pre>
+<p>You want to edit <code>trustinrust.yml</code> and update the following values (other parts of the code have been omitted):</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#bf616a;">provider</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">gateway</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">http://127.0.0.1:31112
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#bf616a;">functions</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">shuffle</span><span style="background-color:#2b303b;color:#c0c5ce;">:
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#bf616a;">image</span><span style="background-color:#2b303b;color:#c0c5ce;">: </span><span style="background-color:#2b303b;color:#a3be8c;">DOCKER_ID/shuffle
+</span></pre>
+<p>The <code>gateway</code> assumes you're running on port 8080, kubernetes runs on a different port.</p>
+<p>I also found the containers couldn't find the local repository so adding your docker id to the <code>image</code> ensures it uploads to <a href="https://hub.docker.com/">Docker Hub</a> instead.</p>
+<p>The <code>trustinrust</code> folder contains the boilerplate code from the <code>function</code> crate.</p>
+<p>For our demo, we're going to make a function that shuffle a list of items that are comma separated.</p>
+<p>We'll add <code>rand</code> crate to our dependancies in the <code>Cargo.toml</code>. As you can see we're pretty much writing standard Rust, add in libraries as we need them.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">[dependencies]
+</span><span style="background-color:#2b303b;color:#c0c5ce;">rand = &quot;0.5.1&quot;
+</span></pre>
+<p>Here's the code that's going to go in <code>src/lib.rs</code> (apologies for my awful Rust)</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">extern crate</span><span style="background-color:#2b303b;color:#c0c5ce;"> rand;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">use </span><span style="background-color:#2b303b;color:#c0c5ce;">rand::{thread_rng, Rng};
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">pub fn </span><span style="background-color:#2b303b;color:#8fa1b3;">handle</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#bf616a;">req </span><span style="background-color:#2b303b;color:#c0c5ce;">: String) -&gt; String {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> rng = </span><span style="background-color:#2b303b;color:#96b5b4;">thread_rng</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let</span><span style="background-color:#2b303b;color:#c0c5ce;"> split = req.</span><span style="background-color:#2b303b;color:#96b5b4;">split</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">,</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> vec: Vec&lt;&amp;</span><span style="background-color:#2b303b;color:#b48ead;">str</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt; = split.</span><span style="background-color:#2b303b;color:#96b5b4;">collect</span><span style="background-color:#2b303b;color:#c0c5ce;">();
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">rng.</span><span style="background-color:#2b303b;color:#96b5b4;">shuffle</span><span style="background-color:#2b303b;color:#c0c5ce;">(&amp;</span><span style="background-color:#2b303b;color:#b48ead;">mut</span><span style="background-color:#2b303b;color:#c0c5ce;"> vec);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">let</span><span style="background-color:#2b303b;color:#c0c5ce;"> joined = vec.</span><span style="background-color:#2b303b;color:#96b5b4;">join</span><span style="background-color:#2b303b;color:#c0c5ce;">(&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">, </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">format!(&quot;</span><span style="background-color:#2b303b;color:#d08770;">{:?}</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;, joined)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">}
+</span></pre>
+<p>If you wanted, you can run <code>cargo build</code> to see if the code will build. If you had tests, this would be testable via <code>cargo test</code>.</p>
+<p>Now we can build, push the image to Docker Hub and deploy to OpenFaaS.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">faas-cli build -f trustinrust.yml
+</span><span style="background-color:#2b303b;color:#c0c5ce;">faas-cli push -f trustinrust.yml    # pushes image to docker
+</span><span style="background-color:#2b303b;color:#c0c5ce;">faas-cli deploy -f trustinrust.yml
+</span></pre>
+<p>Finally we can test our function!</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">curl -d &#39;alice,bob,carol,eve&#39; \
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&gt; http://localhost:31112/function/trustinrust
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;bob, alice, eve, carol&quot;
+</span></pre>
+<h2>Summary</h2>
+<p>It was a lot of fun experimenting with serverless functions and Rust. I can see the appeal of serverless functions, reducing functionality to the absolutely minimum. I think my next foray into this space is to see if I can convert my Slack slash commands into serverless functions (they're currently hosted on Heroku).</p>
+<p>If you have to go for yourself, the template and demo function can be found below:</p>
+<ul>
+<li>Template: <a href="https://github.com/booyaa/openfaas-rust-template">github.com/booyaa/openfaas-rust-template</a></li>
+<li>Trust in Rust function: <a href="https://github.com/booyaa/trustinrust">github.com/booyaa/trustinrust</a></li>
+</ul>
+<h2>Further reading</h2>
+<p>If you want to learn more you should look out for videos by the Kubernetes Legend Kelsey Hightower. I can highly recommend <a href="https://youtu.be/u_iAXzy3xBA">Kubernetes For Pythonistas</a>, which features the now-famous Tetris analogy for DevOps. Also seek out Alex Ellis on the youtubes and his excellent collection of <a href="https://www.youtube.com/watch?v=0DbrLsUvaso">Docker, Kubernetes and OpenFaaS</a> videos.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

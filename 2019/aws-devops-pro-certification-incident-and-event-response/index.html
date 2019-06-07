@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: Incident and Event Response</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: Incident and Event Response</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jun 06, 2019 - Reading time: 7 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>What does the exam guide say?</h2>
+<p>To pass this domain, you'll need to know the following:</p>
+<ul>
+<li>Troubleshoot issues and determine how to restore operations</li>
+<li>Determine how to automate event management and alerting</li>
+<li>Apply concepts required to implement automated healing</li>
+<li>Apply concepts required to set up event-driven automated actions</li>
+</ul>
+<p>This domain is <strong>18%</strong> of the overall mark for the exam.</p>
+<h2>What whitepapers are relevant?</h2>
+<p>According to the <a href="https://aws.amazon.com/whitepapers/#security">AWS Whitepapers for Security and Compliance</a> we should look at the following documents:</p>
+<ul>
+<li><a href="https://d1.awsstatic.com/whitepapers/aws_security_incident_response.pdf">AWS Security Incident Response (May 2019)</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/Security/AWS_Security_Best_Practices.pdf">AWS Security Best Practices  (August 2016)</a></li>
+</ul>
+<p>Other whitepapers as recommended by product pages:</p>
+<ul>
+<li><a href="https://aws.amazon.com/answers/account-management/real-time-insights-account-activity/">Real-Time Insights on AWS Account Activity</a></li>
+<li><a href="https://aws.amazon.com/answers/web-applications/real-time-web-analytics-with-kinesis/">Real-Time Web Analytics with Kinesis Data Analytics</a></li>
+<li><a href="https://d1.awsstatic.com/whitepapers/whitepaper-streaming-data-solutions-on-aws-with-amazon-kinesis.pdf">Streaming Data Solutions on AWS with Amazon Kinesis (July 2017)</a></li>
+</ul>
+<h2>What services and products covered in this domain?</h2>
+<ul>
+<li><a href="https://aws.amazon.com/guardduty/">Amazon GuardDuty</a> - thread detection</li>
+<li><a href="https://aws.amazon.com/inspector/">Amazon Inspector</a> - best practice in security</li>
+<li><a href="https://aws.amazon.com/kinesis/">Amazon Kinesis</a> has separate pages for each sub-product
+<ul>
+<li><a href="https://aws.amazon.com/kinesis/video-streams/">Kinesis Video Streams</a> allows you to securely stream video from connected devices for analytics, machine learning and other forms of processing.</li>
+<li><a href="https://aws.amazon.com/kinesis/data-streams/">Kinesis Data Streams</a> is scalable and durable real-time data stream service</li>
+<li><a href="https://aws.amazon.com/kinesis/data-firehose/">Kinesis Data Firehose</a> allows you to capture, transform and load data streams into AWS data stores (S3, ) whilst allowing you to perform near real-time analytics with existing Business Intelligence tools</li>
+<li><a href="https://aws.amazon.com/kinesis/data-analytics/">Kinesis Data Analytics</a> is the next tier up when you've outgrown CloudWatch for analytics. Allowing you to process data streams in real time using SQL or Java.</li>
+</ul>
+</li>
+</ul>
+<h2>What about other types of documentation?</h2>
+<p>If you have the time, by all means, read the User Guides, but they are usually a couple of hundred pages.</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html">Amazon GuardDuty</a></li>
+<li><a href="https://docs.aws.amazon.com/inspector/latest/userguide/inspector_introduction.html">Amazon Inspector</a></li>
+<li>Amazon Kinesis
+<ul>
+<li><a href="https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/what-is-kinesis-video.html">Kinesis Video Streams</a></li>
+<li><a href="http://docs.aws.amazon.com/kinesis/latest/dev/introduction.html">Kinesis Data Streams</a></li>
+<li><a href="https://docs.aws.amazon.com/firehose/latest/dev/">Kinesis Data Firehose</a></li>
+<li><a href="https://docs.aws.amazon.com/kinesisanalytics/latest/dev/what-is.html">Kinesis Data Analytics</a></li>
+</ul>
+</li>
+</ul>
+<p>Alternatively, get familiar with the services using the FAQs:</p>
+<ul>
+<li><a href="https://aws.amazon.com/guardduty/faqs/">Amazon GuardDuty</a></li>
+<li><a href="https://aws.amazon.com/inspector/faqs/">Amazon Inspector</a></li>
+<li>Amazon Kinesis
+<ul>
+<li><a href="https://aws.amazon.com/kinesis/video-streams/faqs/?nc=sn&amp;loc=5">Kinesis Video Streams</a></li>
+<li><a href="https://aws.amazon.com/kinesis/data-streams/faqs/">Kinesis Data Streams</a></li>
+<li><a href="https://aws.amazon.com/kinesis/data-firehose/faqs/">Kinesis Data Firehose</a></li>
+<li><a href="https://aws.amazon.com/kinesis/data-analytics/faqs/">Kinesis Data Analytics</a></li>
+</ul>
+</li>
+</ul>
+<p>You're all expected to know the APIs</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_api_ref.html">Amazon GuardDuty</a></li>
+<li><a href="https://docs.aws.amazon.com/inspector/latest/APIReference/Welcome.html">Amazon Inspector</a></li>
+<li>Amazon Kinesis
+<ul>
+<li><a href="https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/API_Reference.html">Kinesis Video Streams</a></li>
+<li><a href="http://docs.aws.amazon.com/kinesis/latest/APIReference/Welcome.html">Kinesis Data Streams</a></li>
+<li><a href="http://docs.aws.amazon.com/firehose/latest/APIReference/Welcome.html">Kinesis Data Firehose</a></li>
+<li><a href="https://docs.aws.amazon.com/kinesisanalytics/latest/dev/API_Reference.html">Kinesis Data Analytics</a></li>
+</ul>
+</li>
+</ul>
+<p>Before you panic, you'll start to spot a pattern with the API verbs.</p>
+<p>And the CLI commands</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/guardduty/index.html">Amazon GuardDuty</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/inspector/index.html">Amazon Inspector</a></li>
+<li>Amazon Kinesis
+<ul>
+<li>Kinesis Video Streams has 3 different subcommands: <a href="https://docs.aws.amazon.com/cli/latest/reference/kinesis-video-archived-media/index.html">kinesis-video-archived-media</a>, <a href="https://docs.aws.amazon.com/cli/latest/reference/kinesis-video-media/index.html">kinesis-video-media</a>, <a href="https://docs.aws.amazon.com/cli/latest/reference/kinesisvideo/index.html">kinesisvideo</a></li>
+<li>Kinesis Data Streams has no CLI subcommands</li>
+<li>Kinesis Data Firehose has no CLI subcommands</li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/kinesisanalytics/index.html">Kinesis Data Analytics</a></li>
+</ul>
+</li>
+</ul>
+<p>As with the API, there are patterns to the commands.</p>
+<h2>Please put down your weapon. You have 20 seconds to comply.</h2>
+<p><em>Quote: ED-209, Robocop (1987)</em></p>
+<p>This is another domain, that probably requires awareness of the products rather than actual use (especially in the case of the Kinesis suite). As we'll see Amazon GuardDuty and Amazon Inspector do have an immediate use for small to medium-sized business if you don't have an Information Security function in your company.</p>
+<p>As the title of this section suggests, this is domain focussed on how to responding to incidents and events. Incidents are usually around a security context. whereas events are often related to a data stream.</p>
+<p>I'll be covering all the products in this domain within this post since it's a relatively small domain with very little opportunities to provide practical hands-on experience using the AWS CLI.</p>
+<h2>What?</h2>
+<p><strong>Amazon GuardDuty</strong> is a threat detection service that analyses meta-data generated by your account and network activity found in AWS CloudTrail Events, Amazon VPC Flow Log, and DNS Logs. It can detect:</p>
+<ul>
+<li>Reconnaissance - port scanning, login failures, unusual API activity and access from a known bad IP.</li>
+<li>Instance compromise - malware, outbound denial of service activity, unusually high volumes of traffic, activity from a known bad IP, data exfiltration via DNS</li>
+<li>Account compromise - attempt to disable AWS CloudTrail logging, unusual instance or infrastructure launches (think: GPU instance types for cryptocurrency mining), resources being spun up in regions outside of normal use, activity from a known bad IP.</li>
+<li>Data retention for a GuardDuty-generated finding is 90 days.</li>
+</ul>
+<p><strong>Amazon Inspector</strong> is another automated security assessment service just like GuardDuty, but instead of identifying issues with your account or network activity it primarily focusses on your EC2 instances. It has built-in rules (created and maintained by AWS security researchers) to check for access to your instances from the internet, remote root login being enabled, or vulnerable software versions installed.</p>
+<p><strong>Amazon Kinesis</strong> is a suite of products:</p>
+<ul>
+<li><strong>Kinesis Video Streams</strong> accepts video streams from devices and allow you to perform analytics, machine learning (Amazon Rekognition Video and Amazon SageMaker) and other forms of processing.</li>
+<li><strong>Kinesis Data Streams</strong> is a scalable and durable real-time data streaming service that can capture high volumes of data (gigabytes of data per second) from hundreds of thousands of sources. You can then take this data and process it using Kinesis Data Analytics, Spark or code running on an EC2 instance (API) or AWS Lambda.</li>
+<li><strong>Kinesis Data Firehose</strong> allows you to take your high volumes of streaming data and load them into data stores (S3, Amazon Redshift, Amazon Elasticsearch and a 3rd party tool called Splunk) for analytics.</li>
+<li><strong>Kinesis Data Analytics</strong> can take data streams from Kinesis Data Firehose and Kinesis Data Streams and perform queries against the data using SQL or Java.</li>
+</ul>
+<h2>Why?</h2>
+<p><strong>Amazon GuardDuty</strong> provides a comprehensive threat detection service, whilst it does offer reporting through a dashboard, the response workflow does require more work i.e. you're expected to write the tooling (AWS Lambda) around the events (CloudWatch). This is probably why Amazon is touting <a href="https://aws.amazon.com/guardduty/resources/partners/">partners</a> who can help implement these workflows.</p>
+<p><strong>Amazon Inspector</strong> as with GuardDuty, you get an all-around security assessment tool for your EC2 instances.</p>
+<p>The <strong>Amazon Kinesis</strong> suite provides managed services that can handle large amounts of data. Whilst you run your own <a href="https://kafka.apache.org/">Apache Kafka</a> environment, you would need a large team to support it setup and on-going maintenance. Trivia: Amazon also provides a managed service for Apache Kafka called <a href="https://aws.amazon.com/msk/">Amazon Managed Streaming for Apache Kafka</a>. The key take away for why Kinesis exists is that it has specialist tooling for Video and High Volume Data streams. Because of tight integration into AWS data services Kinesis Data FireHose can load large volumes of data into their services with a minimal amount of configuration. Kinesis Data Analytics can be used to perform analytics against these data streams or when you've outgrown the likes of CloudWatch for log analysis. Finally, all of these products in this suite can be used together or separately, although Kinesis Data Analytics does require the source to come from Kinesis Data FireHouse or Kinesis Data Streams</p>
+<h2>When?</h2>
+<p><strong>Amazon GuardDuty</strong> should be used when you don't want the overhead of managing your own threat detection and response system. To do this yourself you would need to use tools like <a href="https://www.snort.org/">Snort</a> or <a href="https://github.com/Tripwire/tripwire-open-source">Tripwire</a> and maintain subscriptions to 3rd party threat intelligence sources like <a href="http://www.proofpoint.com/">Proofpoint</a> and <a href="https://www.crowdstrike.com/">CrowdStrike</a>.</p>
+<p><strong>Amazon Inspector</strong> is a complementary tool to Amazon GuardDuty, so the chances are if you're using it (Amazon GuardDuty), you should be using Amazon Inspector.</p>
+<p>Some of the use cases for <strong>Amazon Kinesis</strong> are:</p>
+<ul>
+<li>Capturing live video streams of cars, identifying the license plates and then taking action.</li>
+<li>Transform batch loading (and subsequent overnight reporting), into the real-time analysis.</li>
+<li>Collecting telemetry data from a fleet Internet of Things devices and reacting to the data using other AWS services like AWS Lambda.</li>
+</ul>
+<h2>How?</h2>
+<p><strong>Amazon GuardDuty</strong> provides a <a href="https://aws.amazon.com/guardduty/pricing/">30-day free trial</a>, after that you charged by the volume of events (CloudTrail) and volume of data (Amazon VPC Flow Log and DNS log). The key things (also that form the navigation menu) you need to be aware of in the service page in the AWS Console are:</p>
+<ul>
+<li>Findings are potential security issues discovered by GuardDuty.</li>
+<li>Settings are where:
+<ul>
+<li>permissions for the service are defined</li>
+<li>Set the interval that GuardDuty sends events to CloudWatch</li>
+<li>Preload GuardDuty with sample findings</li>
+<li>Suspend or disable GuardDuty</li>
+</ul>
+</li>
+<li>Lists are the list management page where you can upload a list of Trusted IPs or Threat Lists (malicious IP addresses). You can upload have a max of 6 Threat Lists per AWS account per region.</li>
+<li>Accounts - to manage Master (admin) and Member (users) Accounts within the service</li>
+<li>What's New - features announcement (you can also subscribe via <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_sns.html">SNS topic</a>)</li>
+<li>Free trial - how much time you have left</li>
+</ul>
+<p><strong>Amazon Inspector</strong> provides a <a href="https://aws.amazon.com/inspector/pricing/">90 day free trial</a> for the first 250 instance assessments. The key things to be aware of are:</p>
+<ul>
+<li>Agents - can analyse your EC2 instances without the use of it's <a href="https://docs.aws.amazon.com/inspector/latest/userguide/inspector_agents.html">agent</a>, but you will be only limited to <a href="https://docs.aws.amazon.com/inspector/latest/userguide/inspector_network-reachability.html">Network Reachability</a> rules.</li>
+<li>Assessment target is a collection of EC2 instances group together using AWS tags.</li>
+<li>Assessment template</li>
+<li>Finding</li>
+<li>Rule packages there are two categories: Network and Host assessments.
+<ul>
+<li>Important: you can only run the Network assessment rule if you don't have the agent installed.</li>
+<li>Rules within these categories are
+<ul>
+<li>Network assessment
+<ul>
+<li>Network Reachability</li>
+</ul>
+</li>
+<li>Host assessment
+<ul>
+<li>Common Vulnerability and Exposures</li>
+<li>Centre for Internet Security (CIS) Benchmarks</li>
+<li>Security Best Practices for Amazon Inspector</li>
+<li>Runtime Behaviour Analysis</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Telemetry is data (behaviour, configuration, etc) collected by Amazon Inspector from the EC2 instance when an assessment is run.</li>
+</ul>
+<p><strong>Amazon Kinesis</strong> does require development to utilise the services. The examples provided require quite a bit of setup. It would be nice if you could pre-load the services with sample data much as you can with Amazon GuardDuty or Amazon Inspector.</p>
+<!-- What whitepapers are relevant? -->
+<!-- What services and products covered in this domain? -->
+<!-- Why -->
+<!-- When -->
+<!-- How -->
+<h2>AWS DevOps Pro Certification Blog Post Series</h2>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a></li>
+<li>Domain 3: <a href="/2019/aws-devops-pro-certification-monitoring-and-logging">Monitoring and Logging</a></li>
+<li>Domain 4: <a href="/2019/aws-devops-pro-certification-policy-standards-automation/">Policies and Standards Automation</a></li>
+<li>Domain 5: Incident and Event Response
+<ul>
+<li>Amazon GuardDuty</li>
+<li>Amazon Inspector</li>
+<li>Amazon Kinesis
+<ul>
+<li>Kinesis Video Streams</li>
+<li>Kinesis Data Streams</li>
+<li>Kinesis Data Firehose</li>
+<li>Kinesis Data Analytics</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

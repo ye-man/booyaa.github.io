@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Rust2018 - A year of talks</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Rust2018 - A year of talks</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jan 28, 2018 - Reading time: 4 minutes.</time><br />
+      
+      <p>Background: This my blog post for the Rust team's <a href="https://blog.rust-lang.org/2018/01/03/new-years-rust-a-call-for-community-blogposts.html">request</a> for community blog posts.</p>
+<p>Before I address my hopes for Rust in 2018, I thought I'd look back at a year of meet ups that we've organised for London's Rust <a href="https://www.meetup.com/Rust-London-User-Group">user group</a>.</p>
+<h2>meet_ups.len() // The Numbers Don't Lie</h2>
+<p>We had 7 talks with an average RSVP of 56 people per meet up. There were 6 &quot;Hack and Learn&quot; events (where we work on Rust together) with an average RSVP of 30 people per meet up. Finally we hosted our year end &quot;Show and Tell&quot; (lightning talks, where no demo is too small) with 22 RSVPs.</p>
+<p>That's 14 events, which given that we ran out of speakers (more on this later) was an amazing achievement!</p>
+<p>Furthermore I feel we gave our user group a choice to either listen to talks about Rust, or what I'm sure is preferable to most, to hack on Rust!</p>
+<p>I'm particularly fond of the &quot;Show and Tell&quot; because it's a relaxed format that allows people to try things out. We've had a few people go on to do main talks, so I feel it's a confidence booster.</p>
+<h2>str::replace(&quot;These are a few of my Favourite Things&quot;, &quot;hing&quot;, &quot;alk&quot;)</h2>
+<p>I've loved all the talks that I've heard this year, but here are a few that stood out.</p>
+<ul>
+<li>Jonathan Pallant (JPster) - <a href="https://skillsmatter.com/skillscasts/9817-february-rust-meetup">Embedded Rust Talk (video)</a> - This was my first example of Rust running on embedded hardware (vs talking to a server via serial). This has so far been our only talk involving physical computing, I hope it's not the last!</li>
+<li>Niko Matsakis - <a href="https://skillsmatter.com/skillscasts/10868-inside-the-rust-compiler">Compiler Internals (video)</a> - Not our first remote talk, but certainly the most exciting because it was provided by a member of the core team. Trivia: this wasn't the first time Niko had given a talk to our group. Over a year ago he along with a sizable contingency of the core team descended upon our humble group and gave us a serious overload of Rust! You can see those videos <a href="https://skillsmatter.com/meetups/8173-state-of-rust-2016-and-how-to-create-webservices-in-rust">here</a>.</li>
+<li>Pete Hayes - <a href="https://skillsmatter.com/skillscasts/11038-intecture-2-tokio-drift">Intecture 2: Tokio Drift (video)</a> - In <a href="https://skillsmatter.com/skillscasts/8311-rust-london-meetup">2016 (video)</a> Pete introduced us to his product Intecture. In 2017 he came back to show us his progress, which was pretty exciting, and included replacing a lot of zeromq with Tokio!</li>
+</ul>
+<h1>Lessons learnt</h1>
+<p>I need to improve my time keeping; we've been close to being kicked out of the venue because we've run so late. So to address this I plan to nominate someone as time keeper.</p>
+<p>Our remote speaking set-up isn't ideal. I'd love to use Mozilla's Vidyo, but licenses don't extend to meet ups. Also Google hangout's UI is so counter-intuitive (don't @ me) that frequently new users end up not screen switching and you spend the first 5 minutes with a very personal face to face chat.</p>
+<p>I'm going to try Zoom, but if you have something you swear by that ideally allows 2 way video and screen sharing, drop me a note!</p>
+<p>On the subject of remote speakers, if you're lucky enough to have excellent A/V team who provide 2 way audio this is almost as good as having your speaker there with you. If we hadn't made use of remote speakers, I'm certain we'd have fewer meet ups in 2017. Turns out even the capital only has a finite number of people who can and want to talk about Rust!</p>
+<h1>So what's in store for the talks meetup in 2018?</h1>
+<p>My overarching goal is to encourage female and non-binary attendees to come to our meetups. Currently the percentage is under 3%. It would be great to get to 51%, to prove that the Rust community is as welcoming and supportive as we'd like to be.</p>
+<p>I'm going to be relying on the kindest of friends to help me achieve this, and I'll follow this post up with an outline of the actual plan.</p>
+<p>My stretch goals are:</p>
+<ul>
+<li>Produce more home grown speakers i.e. from our attendee list.</li>
+<li>Try out the <a href="https://skillsmatter.com/skillscasts/8311-rust-london-meetup">Fishbowl</a> (thanks Florian) and <a href="https://en.wikipedia.org/wiki/Open_Space_Technology">Open Space</a> format meet ups.</li>
+<li>Find a better way to solicit feedback about the events, speakers and suggestions.</li>
+</ul>
+<h1>Thanks</h1>
+<p>Before I end this blog, I'd like to thank the following group of people without whose help these meet ups wouldn't happen.</p>
+<ul>
+<li>Christian, my fellow organiser, who single handledly took on the Hack and Learn meet ups and has had equally great success.</li>
+<li>Skillsmatter for hosting us and providing video recordings. I'd like to single out the A/V team in particular who were unfazed by any of our display connectivity issues and remote talk quirks.</li>
+<li>Speakers for taking the time to talk about your passion project.</li>
+<li>The attendees for being the vital ingredient to make a meet up successful.</li>
+</ul>
+<h1>You're still reading?</h1>
+<p>Then why not enjoy our recorded talks from 2017!</p>
+<ul>
+<li>February
+<ul>
+<li>Jonathan Pallant - <a href="https://skillsmatter.com/skillscasts/9817-february-rust-meetup">Embedded Rust Talk (video)</a></li>
+</ul>
+</li>
+<li>May - Blockchains (only themed event)
+<ul>
+<li>Parity Tech - <a href="https://skillsmatter.com/skillscasts/10194-building-blockchains-at-parity-technologies">Building blockchains at Parity Technologies (video)</a></li>
+<li>MaidSafe - <a href="https://skillsmatter.com/skillscasts/10209-building-the-safe-network-in-rust">Building the SAFE Network in Rust (video)</a></li>
+</ul>
+</li>
+<li>July
+<ul>
+<li>Me - <a href="https://skillsmatter.com/skillscasts/10589-london-rust-meetup-14">Generator X: The State of Rust Static Site Generators (video)</a></li>
+</ul>
+</li>
+<li>August
+<ul>
+<li>Aidan Hobson Sayers - <a href="https://skillsmatter.com/skillscasts/10663-rewrite-it-in-rust-some-experiences-in-journeys-from-c-and-c-plus-plus">Rewrite it in Rust? Some experiences in journeys from C and C++ (video)</a></li>
+<li>Me - <a href="https://skillsmatter.com/skillscasts/10664-rust-language-server-and-you">Rust Language Server And You! (video)</a></li>
+</ul>
+</li>
+<li>September
+<ul>
+<li>Niko Matsakis - <a href="https://skillsmatter.com/skillscasts/10868-inside-the-rust-compiler">Compiler Internals (video)</a></li>
+<li>Amanieu d'Antras - <a href="https://skillsmatter.com/skillscasts/10911-intrusive-data-structures-for-rust">Intrusive collections for Rust (video)</a></li>
+<li>David Harvey-Macaulay - <a href="https://skillsmatter.com/skillscasts/10925-three-rs-high-level-3d-in-rust">three-rs: High-level 3D in Rust (video)</a></li>
+</ul>
+</li>
+<li>October
+<ul>
+<li>David Dawson - <a href="https://skillsmatter.com/skillscasts/10898-building-message-and-event-based-apis-using-muon-rust-edition">Building Message and Event based APIs using Muon - Rust Edition (video)</a></li>
+<li>Diane Hosfelt - <a href="https://skillsmatter.com/skillscasts/11037-exploiting-rust-for-fun-and-profit">Attacking Rust for Rust for Fun and Profit (video)</a></li>
+<li>Pete Hayes - <a href="https://skillsmatter.com/skillscasts/11038-intecture-2-tokio-drift">Intecture 2: Tokio Drift (video)</a></li>
+</ul>
+</li>
+<li>November
+<ul>
+<li>Apoorv Kothari - <a href="https://skillsmatter.com/skillscasts/10897-ownership-the-core-principal-of-api-design">Ownership, the Core Principal of API Design (video)</a></li>
+</ul>
+</li>
+</ul>
+<h1>Comments or feedback?</h1>
+<p>Here's the <a href="https://users.rust-lang.org/t/rust2018-a-year-of-talks/15316">URLO thread</a> to do this.</p>
+<h1>FIN</h1>
+<p>honest.</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

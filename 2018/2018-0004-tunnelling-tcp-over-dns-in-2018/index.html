@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Tunnelling TCP over DNS in 2018</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Tunnelling TCP over DNS in 2018</h1>
+       
+      
+      
+      
+          
+				 
+
+			<time pubdate="pubdate">Mar 18, 2018 - Reading time: about a minute.</time><br />
+      
+      <p>I wrote this article after seeing that no one had written anything about tunnelling tcp traffic over dns since 2016.</p>
+<p>A common use of this type of tunnelling is to gain free Internet access by tunneling through a WiFi captive portal.</p>
+<p>I'd also say it's probably a good idea to get some practice before similar types of network restriction are imposed by your ISP or the state.</p>
+<p>Just like stateful packet inspection will reveal ssh tunneling over https, this is by no means a method of concealment so caveat emptor!</p>
+<p>My choice of tunneling tool is <strong>iodine</strong>. The code can be found on <a href="https://github.com/yarrick/iodine">GitHub</a>, the site is hosted on <a href="http://code.kryo.se/iodine/">code.kryo.se</a>.</p>
+<p>The setup hasn't changed along with the current version (0.7.0). Important thing to note here is that you should always have parity with the client and server version of iodine.</p>
+<h2>Setting up iodine:</h2>
+<h3>Provision a server (via DigitalOcean et al).</h3>
+<ul>
+<li>install iodine (ubuntu/debian) <code>apt-get install iodine</code></li>
+<li>run as a service <code>iodined -f -c -P f00b44 10.0.0.1 t1.yourdomain.tld</code></li>
+</ul>
+<p>note 1: f00b44 is your shared secret between client and server</p>
+<p>note 2: just as you would with a vpn, you create a private network for your tunnel, in our case we're using the</p>
+<p>note 3: here's my DigitalOcean referral <a href="https://m.do.co/c/95d81208d348">link</a> if you're feeling particularly generous.</p>
+<h3>Create DNS records to point to your server</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">t1ns A your_vps_ip
+</span><span style="background-color:#2b303b;color:#c0c5ce;">t1 NS t1ns.yourdomain.tld
+</span></pre>
+<p>tip: I use cloudflare to manage my dns, which means my DNS records propagate fairly quickly across the Internet.</p>
+<h3>Install the client (mac OS)</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">git clone https://github.com/yarrick/iodine.git
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ls
+</span><span style="background-color:#2b303b;color:#c0c5ce;">cd iodine/
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ls
+</span><span style="background-color:#2b303b;color:#c0c5ce;">make
+</span><span style="background-color:#2b303b;color:#c0c5ce;">make
+</span><span style="background-color:#2b303b;color:#c0c5ce;">PREFIX=/usr/local make install
+</span></pre>
+<h3>Connect the client to the server</h3>
+<p><code>sudo /usr/local/sbin/iodine -d utunX -f -P f00b44 t1.yourdomain.tld</code></p>
+<p>note: you need sudo to use the tunnelling network adaptor.</p>
+<h3>Setup verification</h3>
+<p>To verify setup we'll setup a ssh as a SOCKS proxy <code>ssh -D 9999 10.0.0.1</code>.</p>
+<p>note: we're setting up the the SOCKS proxy via our server's ip address.</p>
+<p>And then use httpbin to verify our ip address <code>curl --socks5-hostname 127.0.0.1:9999 -L http://httpbin.org/ip</code></p>
+<p>When tunnelling you got expect a considerable loss of bandwidth, I'd only recommend using ssh over this type of tunnelling, it's just too slow to do anything else useful.</p>
+<p>random-tip: <code>&lt;enter&gt; ~.</code> to escape hung ssh sessions</p>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

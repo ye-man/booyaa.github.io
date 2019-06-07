@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Dirty Dynamic SQL</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Dirty Dynamic SQL</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Jul 01, 2017 - Reading time: 3 minutes.</time><br />
+      
+      <p>Not all dynamic sql is strictly for immediate execution, nor is it dirty (I
+needed aninteresting title). I learnt this tricks from my friend at work, he's
+a big believer of using sql to code generate more sql.</p>
+<h2>Altering column length</h2>
+<p>You'll still get an error when running the generated sql if you try to shrink a column.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">SELECT </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">ALTER TABLE </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || table_name || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;"> MODIFY </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || column_name || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;"> VARCHAR2(</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || </span><span style="background-color:#2b303b;color:#b48ead;">CASE</span><span style="background-color:#2b303b;color:#c0c5ce;"> column_name  </span><span style="background-color:#2b303b;color:#b48ead;">WHEN </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">FOO</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">THEN </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">10</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;  </span><span style="background-color:#2b303b;color:#b48ead;">ELSE </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">20</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">END </span><span style="background-color:#2b303b;color:#c0c5ce;">|| &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">);</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; </span><span style="background-color:#2b303b;color:#b48ead;">AS</span><span style="background-color:#2b303b;color:#c0c5ce;"> sql
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">FROM</span><span style="background-color:#2b303b;color:#c0c5ce;"> user_tab_columns 
+</span><span style="background-color:#2b303b;color:#c0c5ce;"> </span><span style="background-color:#2b303b;color:#b48ead;">WHERE</span><span style="background-color:#2b303b;color:#c0c5ce;"> column_name </span><span style="background-color:#2b303b;color:#b48ead;">IN</span><span style="background-color:#2b303b;color:#c0c5ce;"> ( &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">FOO</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;,&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">BAR</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">   </span><span style="background-color:#2b303b;color:#b48ead;">AND</span><span style="background-color:#2b303b;color:#c0c5ce;"> table_name </span><span style="background-color:#2b303b;color:#b48ead;">IN</span><span style="background-color:#2b303b;color:#c0c5ce;"> (</span><span style="background-color:#2b303b;color:#b48ead;">SELECT</span><span style="background-color:#2b303b;color:#c0c5ce;"> table_name </span><span style="background-color:#2b303b;color:#b48ead;">FROM</span><span style="background-color:#2b303b;color:#c0c5ce;"> user_tables)   
+</span><span style="background-color:#2b303b;color:#c0c5ce;">   </span><span style="background-color:#2b303b;color:#b48ead;">AND</span><span style="background-color:#2b303b;color:#c0c5ce;"> NOT regexp_like(table_name, &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">_(NEW|BAK)$</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;) </span><span style="background-color:#2b303b;color:#65737e;">-- exclude backups
+</span></pre>
+<h2>Inserting (hurr) output from dynamic sql</h2>
+<p>Normally you'd expect to get away with using something like <code>SELECT blah INTO v_foo</code>, but with dynamic sql you need place the <code>INTO</code> in the <code>EXECUTE IMMEDIATE</code> statement.</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">SET SERVEROUTPUT ON
+</span><span style="background-color:#2b303b;color:#c0c5ce;">DECLARE
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">v_sql VARCHAR2(8000);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">v_count NUMBER;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">CURSOR c_tables
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">IS
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">SELECT table_name
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">FROM user_tables;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">BEGIN
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">FOR rec in c_tables
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">LOOP
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">v_sql := &#39;SELECT count(*) FROM &#39; || rec.table_name;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">EXECUTE IMMEDIATE v_sql INTO v_count;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">DBMS_OUTPUT.put_line(rec.table_name || &#39; has &#39; || v_count);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">END LOOP;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">END;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">/
+</span></pre>
+<p>tags: rowcount , row , count</p>
+<h2>Using substution variables</h2>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">clear screen
+</span><span style="background-color:#2b303b;color:#b48ead;">set</span><span style="background-color:#2b303b;color:#c0c5ce;"> serveroutput </span><span style="background-color:#2b303b;color:#b48ead;">on
+</span><span style="background-color:#2b303b;color:#c0c5ce;">declare
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">cursor c_tables is </span><span style="background-color:#2b303b;color:#b48ead;">select</span><span style="background-color:#2b303b;color:#c0c5ce;"> table_name </span><span style="background-color:#2b303b;color:#b48ead;">from</span><span style="background-color:#2b303b;color:#c0c5ce;"> user_tables;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">v_data </span><span style="background-color:#2b303b;color:#b48ead;">VARCHAR2</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2000</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">v_sql </span><span style="background-color:#2b303b;color:#b48ead;">VARCHAR2</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">2000</span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">v_stuff </span><span style="background-color:#2b303b;color:#b48ead;">VARCHAR2</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">50</span><span style="background-color:#2b303b;color:#c0c5ce;">) := &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&amp;1</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;; </span><span style="background-color:#2b303b;color:#65737e;">-- try entering MAX(DATADATE) or COUNT(*) 
+</span><span style="background-color:#2b303b;color:#b48ead;">begin
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">for rec </span><span style="background-color:#2b303b;color:#b48ead;">in</span><span style="background-color:#2b303b;color:#c0c5ce;"> c_tables
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">loop
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">v_sql := &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">SELECT TO_CHAR(</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || v_stuff || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">) FROM </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || </span><span style="background-color:#2b303b;color:#d08770;">rec</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">table_name</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">begin
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#c0c5ce;">execute immediate v_sql into v_data;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#d08770;">dbms_output</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">put_line</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#d08770;">rec</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">table_name </span><span style="background-color:#2b303b;color:#c0c5ce;">|| &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">: </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || v_data);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">exception
+</span><span style="background-color:#2b303b;color:#c0c5ce;">      </span><span style="background-color:#2b303b;color:#b48ead;">when</span><span style="background-color:#2b303b;color:#c0c5ce;"> others </span><span style="background-color:#2b303b;color:#b48ead;">then
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">dbms_output</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">put_line</span><span style="background-color:#2b303b;color:#c0c5ce;">(&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">failed to run: </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || v_sql);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">raise;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">end</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#b48ead;">end case</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#b48ead;">end</span><span style="background-color:#2b303b;color:#c0c5ce;"> loop;
+</span><span style="background-color:#2b303b;color:#b48ead;">end</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">/
+</span></pre>
+<h2>One liners</h2>
+<h3>Grants</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">SELECT </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">GRANT </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || privilege || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;"> ON &quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || GRANTOR ||&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;.&quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || TABLE_NAME || 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">       </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot; TO &quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || GRANTEE || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; 
+</span><span style="background-color:#2b303b;color:#b48ead;">FROM</span><span style="background-color:#2b303b;color:#c0c5ce;"> dba_tab_privs 
+</span><span style="background-color:#2b303b;color:#b48ead;">WHERE</span><span style="background-color:#2b303b;color:#c0c5ce;"> grantor = &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">FOO</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#b48ead;">AND</span><span style="background-color:#2b303b;color:#c0c5ce;"> grantee = &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">BAR</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span></pre>
+<h3>Recreating synonyms as sys</h3>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">select </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">CREATE OR REPLACE SYNONYM &quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || OWNER || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;.&quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || SYNONYM_NAME || 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">       </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot; FOR &quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || TABLE_OWNER || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;.&quot;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; || TABLE_NAME || &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">&quot;;</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39; 
+</span><span style="background-color:#2b303b;color:#b48ead;">from</span><span style="background-color:#2b303b;color:#c0c5ce;"> dba_synonyms 
+</span><span style="background-color:#2b303b;color:#b48ead;">where</span><span style="background-color:#2b303b;color:#c0c5ce;"> table_owner = &#39;</span><span style="background-color:#2b303b;color:#a3be8c;">FOO</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;;
+</span></pre>
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

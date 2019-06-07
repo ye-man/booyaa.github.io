@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Using pre-built lunr indexes</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Using pre-built lunr indexes</h1>
+       
+      
+      
+      
+          
+				 
+
+			<time pubdate="pubdate">Jun 22, 2017 - Reading time: about a minute.</time><br />
+      
+      <p>I've implemented pre-built indexes vs. on demand i.e. generating them when the
+search page is being loaded. I'm not entirely happy with the solution yet for
+the following reasons:</p>
+<ul>
+<li>Additional requirements - pre-built indexes require node.js to generate the
+indexes offline.</li>
+<li>Documents collection - the original search page still depends on the <code>ref</code>
+field (the link to the relevant blog post) and title because the lunr index
+doesn't provide this. The <code>content</code> field is now surplus to requirements once
+the site has been built, but it is needed during index generation.</li>
+<li>Added complexity - I know adding node.js isn't a big ask, but it has resulted
+in a new makefile. And until I update my travis config, pre-built indexes only
+get created when I've written a new article.</li>
+</ul>
+<p>One novel approach to solving both these problems is to utilise a V8 crate and
+run lunr index natively. This is the approach adopted by the <a href="https://github.com/256dpi/middleman-lunr/blob/master/lib/middleman-lunr/indexer.rb">lunr indexer</a>
+for <a href="https://middlemanapp.com/">middleman</a> (a static site generate written in
+ruby).</p>
+<p>Since we're not looking at native Cobalt solutions i.e. using liquid templates,
+another approach would be to modify the node.js script used to pre-build the
+index, to parse the content natively and remove the need for the <code>lunr.liquid</code>
+template. The script would also need to generate the documents collection
+that's still used by the search page minus the content field.</p>
+<p>The code changes can be found in the following commits:</p>
+<ul>
+<li><a href="https://github.com/booyaa/booyaa.github.io/commit/6628ea50d34ea83969089ade327002dcafe454d1">node.js script</a> - used to pre-build the index, mostly cribbed from the lunr
+<a href="https://lunrjs.com/guides/index_prebuilding.html">guide</a> on that subject.</li>
+<li><a href="https://github.com/booyaa/booyaa.github.io/commit/9303429d0fb1e7a1163149a9b14cb97201003a50">makefile and search template</a> - the makefile is cribbed from Matthias Endler's <a href="https://github.com/mre/mre.github.io/blob/source/Makefile">own</a> version used to
+build his Cobalt site. The search template adds the prebuilt index to the list of
+assets to be loaded when the page is loaded.</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

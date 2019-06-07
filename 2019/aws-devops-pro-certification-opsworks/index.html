@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>AWS DevOps Pro Certification Blog Post Series: OpsWorks</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>AWS DevOps Pro Certification Blog Post Series: OpsWorks</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">May 31, 2019 - Reading time: 4 minutes.</time><br />
+      
+      <p><em>This is part of the blog post series: <a href="/2019/aws-devops-pro-certification-intro/">AWS DevOps Pro Certification</a></em></p>
+<h2>Caveat emptor</h2>
+<p>Using AWS costs money, some of these services may not be part of the AWS <a href="https://aws.amazon.com/free/">Free Tier</a>. You can keep costs down by tearing down anything you've created whilst learning, but it's still possible to run up a hefty bill so pay attention to the instances you setup!</p>
+<p>I'm very lucky to be able to use my employer's AWS account. You should ask your place of work if a similar arrangement can be made as part of your study.</p>
+<h2>Velocius quam asparagi conquantur</h2>
+<p>The format of the blog posts is liable to change as I try to refine my mental model of each domain, so be sure to revisit the blog posts on a regular basis.</p>
+<h2>What?</h2>
+<p>OpsWorks is</p>
+<ul>
+<li>provides three managed services
+<ul>
+<li>AWS OpsWorks for Chef Automate</li>
+<li>AWS OpsWorks for Puppet Enterprise</li>
+<li>AWS OpsWorks Stacks which uses Chef Solo</li>
+</ul>
+</li>
+</ul>
+<p>In this post, we'll primarily be focussing on AWS OpsWorks Stacks, but know that the others are managed services that can be utilised instead of running yourself (think of the comparison to self-hosting a database server versus using RDS).</p>
+<p>OpsWorks Stack...</p>
+<ul>
+<li>is a declarative state engine (as is Chef Automate and Solo). By this mean you define what you want to happen i.e. have a web server running, OpsWorks/Chef will then determine how to do it on the operating system that the Chef agent is installed on. Recall that package managers and configuration files live in different places in Operating Systems, even in distributions of Operating Systems (CentOS, Debian et al).</li>
+<li>is also unique compared to other Chef managed services in that it uses the concept of &quot;Layers&quot;</li>
+<li>autoscaling and scheduled scaling enabled</li>
+<li>provides you with a choice of Chef 11 or 12 stacks. The difference between the two versions is that Chef 11 has built-in cookbooks, whereas Chef 12 allows you to use your own or community cookbooks.</li>
+<li>has a concept of Layers (think of these as different layers of functionality i.e. web server, database server)
+<ul>
+<li>these layers can be OpsWorks, ECS or RDS based</li>
+</ul>
+</li>
+</ul>
+<p>Additional resources:</p>
+<ul>
+<li>FAQs
+<ul>
+<li><a href="https://aws.amazon.com/opsworks/chefautomate/faqs/?nc=sn&amp;loc=5">OpsWorks for Chef Automate</a></li>
+<li><a href="https://aws.amazon.com/opsworks/puppetenterprise/faqs/?nc=sn&amp;loc=5">OpsWorks for Puppet Enterprise</a></li>
+<li><a href="https://aws.amazon.com/opsworks/stacks/faqs/?nc=sn&amp;loc=5">OpsWorks Stacks</a></li>
+</ul>
+</li>
+<li><a href="https://docs.aws.amazon.com/opsworks/latest/userguide/welcome.html">OpsWorks Stacks User Guide</a></li>
+<li>APIs
+<ul>
+<li><a href="https://docs.aws.amazon.com/opsworks/latest/APIReference/Welcome.html">OpsWorks Stacks</a></li>
+<li><a href="https://docs.aws.amazon.com/opsworks-cm/latest/APIReference/Welcome.html">OpsWorks Configuration Management</a></li>
+</ul>
+</li>
+<li>CLIs
+<ul>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/opsworks/index.html">OpsWorks Stacks</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/reference/opsworks-cm/index.html">OpsWork Configuration Management</a></li>
+</ul>
+</li>
+</ul>
+<h2>Why?</h2>
+<p>If CloudFormation is most configurable (and ultimate the most complex) orchestration tool (requiring a fair bit of Operations/Infrastructure experience) and Elastic Beanstalk is developer friendly and quick to get up and running. Then OpsWorks Stacks is probably the middle ground.</p>
+<p>CloudFormation is a tool that is very specific to AWS, whereas your Chef recipes could be used on other Chef installations.</p>
+<h2>When?</h2>
+<ul>
+<li>You have familiarity with Chef</li>
+<li>Want a certain degree of control, but not the complexity of CloudFormation.</li>
+</ul>
+<h2>How?</h2>
+<p>I've not had the time to hunt down the CLI equivalent for this section, please drop me a comment if you have resources I can use!</p>
+<p>I've loosely based this around the <a href="https://docs.aws.amazon.com/opsworks/latest/userguide/gettingstarted-linux.html">Getting Started</a> guide for Linux with the following exceptions:</p>
+<ul>
+<li>
+<p>Using a Chef 11 Stack</p>
+</li>
+<li>
+<p>The application is a static site</p>
+</li>
+<li>
+<p>The application deployment is via https (the GitHub download as zip link)</p>
+</li>
+<li>
+<p>Go to AWS Console and find the OpsWorks service (if you don't have a Stack defined you'll be at the introductory page which provides info about Stacks and the other managed services offerings).</p>
+</li>
+<li>
+<p>Create a stack (Chef 11)</p>
+<ul>
+<li>Provide a stack name</li>
+<li>Everything else is based on the region you choose i.e. VPC and subnet or sensible defaults provided by AWS (Operating System)</li>
+</ul>
+</li>
+<li>
+<p>Add a layer (OpsWorks / ECS / RDS) - well drill into OpsWorks</p>
+<ul>
+<li>Set <em>Layer Type</em> as <code>Static Web Server</code>
+<ul>
+<li>The layer type is based on blueprints and can be load balancing, app server (Static, Node, PHP and Rails) and a few other types (MySQL, Memcache, Ganglia and custom).</li>
+<li>You can only have one type as a Layer.</li>
+</ul>
+</li>
+<li>You can assign to an Elastic Load Balancer if you have one available (it will become a new layer). This makes sense if you've got multiple instances.</li>
+</ul>
+</li>
+<li>
+<p>Add an instance(s)</p>
+<ul>
+<li><em>Hostname</em> - will be predefined based on the layer type</li>
+<li><em>Size</em> - AROOGA! AROOGA! aws wants to set this as <code>c4.large</code> maybe pick something cheaper like <code>t2.micro</code>? ;)</li>
+<li><em>Subnet</em> - you will want to distribute your instances across different subnets.</li>
+<li><em>Advanced</em> is where you can configure scaling type (24/7, time or load based) or override default settings for OS and SSH key</li>
+<li>Start the instance(s)</li>
+</ul>
+</li>
+<li>
+<p>Add an Application</p>
+<ul>
+<li>Provide a name</li>
+<li>Set <em>Repository Type</em> as <code>HTTP Archive</code> (note: other options as Git, Subversion, S3 and Other)</li>
+<li>Set <em>Repository URL</em> as <code>https://github.com/booyaa/static-site-demo/archive/master.zip</code></li>
+<li>Click •Add App* button</li>
+</ul>
+</li>
+<li>
+<p>Deploy the app</p>
+<ul>
+<li>Click the <em>Deploy</em> link next to your newly created &quot;App&quot;</li>
+<li>By default, the instances associated with your <code>Static Web Server</code> will be selected</li>
+<li>Click the <em>Deploy</em> button</li>
+</ul>
+</li>
+<li>
+<p>Wait until the app has been deployed to your instance, then go to the <em>Instances</em> link in the sidebar and click on the <em>Public IP</em> of your instance. This should launch the static site.</p>
+</li>
+</ul>
+<p>To tear down:</p>
+<ul>
+<li>Delete the app</li>
+<li>Stop the instances</li>
+<li>Delete the instances</li>
+<li>Delete the <code>Static Web Server</code> layer</li>
+<li>Delete the app</li>
+</ul>
+<h2>API and CLI features and verbs</h2>
+<h3>Stacks</h3>
+<p><strong>Features</strong></p>
+<ul>
+<li>App</li>
+<li>Instance</li>
+<li>Layer</li>
+<li>Stack</li>
+<li>User Profile</li>
+</ul>
+<p>**Verbs (CRUD) **</p>
+<ul>
+<li>create</li>
+<li>describe</li>
+<li>update</li>
+<li>delete</li>
+</ul>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>assign-instance</li>
+<li>assign-volume</li>
+<li>associate-elastic-ip</li>
+<li>attach-elastic-load-balancer</li>
+<li>clone-stack</li>
+<li>create-deployment</li>
+<li>deregister-ecs-cluster</li>
+<li>deregister-elastic-ip</li>
+<li>deregister-instance</li>
+<li>deregister-rds-db-instance</li>
+<li>deregister-volume</li>
+<li>describe-agent-versions</li>
+<li>describe-commands</li>
+<li>describe-deployments</li>
+<li>describe-ecs-clusters</li>
+<li>describe-elastic-ips</li>
+<li>describe-elastic-load-balancers</li>
+<li>describe-load-based-auto-scaling</li>
+<li>describe-my-user-profile</li>
+<li>describe-operating-systems</li>
+<li>describe-permissions</li>
+<li>describe-raid-arrays</li>
+<li>describe-rds-db-instances</li>
+<li>describe-service-errors</li>
+<li>describe-stack-provisioning-parameters</li>
+<li>describe-stack-summary</li>
+<li>describe-time-based-auto-scaling</li>
+<li>describe-user-profiles</li>
+<li>describe-volumes</li>
+<li>detach-elastic-load-balancer</li>
+<li>disassociate-elastic-ip</li>
+<li>get-hostname-suggestion</li>
+<li>grant-access</li>
+<li>list-tags</li>
+<li>reboot-instance</li>
+<li>register</li>
+<li>register-ecs-cluster</li>
+<li>register-elastic-ip</li>
+<li>register-instance</li>
+<li>register-rds-db-instance</li>
+<li>register-volume</li>
+<li>set-load-based-auto-scaling</li>
+<li>set-permission</li>
+<li>set-time-based-auto-scaling</li>
+<li>start-instance</li>
+<li>start-stack</li>
+<li>stop-instance</li>
+<li>stop-stack</li>
+<li>tag-resource</li>
+<li>unassign-instance</li>
+<li>unassign-volume</li>
+<li>untag-resource</li>
+<li>update-elastic-ip</li>
+<li>update-my-user-profile</li>
+<li>update-rds-db-instance</li>
+<li>update-volume</li>
+<li>wait</li>
+</ul>
+<h3>Configuration Management</h3>
+<p><strong>Features</strong></p>
+<ul>
+<li>Server</li>
+<li>Engine</li>
+<li>Backup</li>
+<li>Events</li>
+<li>Account attributes</li>
+</ul>
+<p>**Verbs (CRUD) **</p>
+<ul>
+<li>create (backup/server)</li>
+<li>describe (backups/servers/account-attribute/events)</li>
+<li>update (server/server-engine-attributes)</li>
+<li>delete (backup/server)</li>
+</ul>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>associate-node</li>
+<li>describe-node-association-status</li>
+<li>disassociate-node</li>
+<li>export-server-engine-attribute</li>
+<li>restore-server</li>
+<li>start-maintenance</li>
+<li>wait</li>
+</ul>
+<p><strong>AWS DevOps Pro Certification Blog Post Series</strong></p>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-intro/">Intro</a></li>
+<li>Domain 1: <a href="/2019/aws-devops-pro-certification-sdlc-intro/">SLDC automation</a></li>
+<li>Domain 2: <a href="/2019/aws-devops-pro-certification-configuration-management-and-infrastructure-as-code-intro/">Configuration Management and Infrastructure as Code</a>
+<ul>
+<li><a href="/2019/aws-devops-pro-certification-cloudformation">CloudFormation</a></li>
+<li><a href="/2019/aws-devops-pro-certification-elastic-beanstalk/">Elastic Beanstalk</a></li>
+<li>OpsWorks</li>
+<li><a href="/2019/aws-devops-pro-certification-lambda/">AWS Lambda</a></li>
+<li><a href="/2019/aws-devops-pro-certification-ecs/">AWS ECS</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Config</a></li>
+<li><a href="/2019/aws-devops-pro-certification-config-managed-services/">AWS Managed Services</a></li>
+</ul>
+</li>
+<li>Domain 3: Monitoring and Logging</li>
+<li>Domain 4: Policies and Standards Automation</li>
+<li>Domain 5: Incident and Event Response</li>
+<li>Domain 6: High Availability, Fault Tolerance, and Disaster Recovery</li>
+</ul>
+
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>

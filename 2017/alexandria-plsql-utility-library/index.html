@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Alexandria PL/SQL Utility Library</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="//writ.cmcenroe.me/1.0.2/writ.min.css">
+<link rel="stylesheet" href="/style.css" type="text/css" media="all" />
+<link rel="alternate" href="/rss.xml" type="application/rss+xml" title="RSS" />
+<meta name="author" content="Mark Sta Ana">
+<meta name="description" content="Personal website of Mark Sta Ana, aged 7 3/4."/>
+<meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" /> 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101141559-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </head>
+<body data-route=blog>
+  <nav class="menu">
+  <a class="menu-item " href="/about/">booyaa</a>
+  <a class="menu-item current" href="/">blog</a>
+  <a class="menu-item " href="/talks">talks</a>
+  <a class="menu-item" href="/search/">search</a>
+  <a class="menu-item" href="/archive/">archive</a>
+  <a class="menu-item icon" href="http://github.com/booyaa"><i class="fa fa-github"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/booyaa"><i class="fa fa-twitter"></i></a>
+  <a class="menu-item icon" href="/rss.xml"><i class="fa fa-rss"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <article>
+      <h1>Alexandria PL/SQL Utility Library</h1>
+       
+      
+      
+      								
+          
+    	 
+
+			<time pubdate="pubdate">Oct 11, 2017 - Reading time: 2 minutes.</time><br />
+      
+      <p>Imagine if BatMan was an Oracle DBA, his utility belt would be the <a href="https://github.com/mortenbra/alexandria-plsql-utils">Alexandria PL/SQL Utility Library</a>.</p>
+<h2>How to install Microsoft Office document parsers (OOXML)</h2>
+<h3>Assumptions</h3>
+<ul>
+<li>This has been tested on 12c r1, I imagine it should still work for 11G.</li>
+<li><code>SCHEMA_ALEX_INSTALL</code> - This is the schema you have created that will host the Alexandria library.</li>
+<li>Using SQLPlus or <a href="http://www.oracle.com/technetwork/developer-tools/sql-developer/overview/index.html">Oracle SQL Developer</a> (in SQLPlus mode)</li>
+<li>Script have installed to a path that SQLPlus can find</li>
+</ul>
+<h3>Installation instructions</h3>
+<p>As <code>sys</code> or similiar</p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">grant</span><span style="background-color:#2b303b;color:#c0c5ce;"> execute </span><span style="background-color:#2b303b;color:#b48ead;">on</span><span style="background-color:#2b303b;color:#c0c5ce;"> dbms_random to SCHEMA_ALEX_INSTALL;
+</span><span style="background-color:#2b303b;color:#b48ead;">grant</span><span style="background-color:#2b303b;color:#c0c5ce;"> execute </span><span style="background-color:#2b303b;color:#b48ead;">on</span><span style="background-color:#2b303b;color:#c0c5ce;"> dbms_lob to SCHEMA_ALEX_INSTALL;
+</span><span style="background-color:#2b303b;color:#b48ead;">grant</span><span style="background-color:#2b303b;color:#c0c5ce;"> execute </span><span style="background-color:#2b303b;color:#b48ead;">on</span><span style="background-color:#2b303b;color:#c0c5ce;"> util_file to SCHEMA_ALEX_INSTALL;
+</span><span style="background-color:#2b303b;color:#b48ead;">grant</span><span style="background-color:#2b303b;color:#c0c5ce;"> create any directory to SCHEMA_ALEX_INSTALL;
+</span></pre>
+<p>As <code>SCHEMA_ALEX_INSTALL</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#b48ead;">set</span><span style="background-color:#2b303b;color:#c0c5ce;"> scan off;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">prompt Creating types
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@</span><span style="background-color:#2b303b;color:#d08770;">types</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">sql
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">prompt Creating MICROSOFT package specifications
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">string_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">zip_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">sql_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">file_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">debug_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_builder_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_dataset_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_stylesheet_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">ooxml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pks
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">prompt Creating MICROSOFT package bodies
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">string_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb 
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">zip_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">sql_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">file_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">debug_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_builder_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_dataset_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_stylesheet_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">xml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">@../ora/</span><span style="background-color:#2b303b;color:#d08770;">ooxml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">pkb
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">prompt Done!
+</span></pre>
+<h3>Verifying the installation</h3>
+<p>As <code>SCHEMA_ALEX_INSTALL</code></p>
+<pre style="background-color:#2b303b;">
+<span style="background-color:#2b303b;color:#c0c5ce;">HOST md d:\temp\devtest </span><span style="background-color:#2b303b;color:#65737e;">-- Un*x users: mkdir /path/to/devtest
+</span><span style="background-color:#2b303b;color:#c0c5ce;">CREATE DIRECTORY devtest_temp_dir </span><span style="background-color:#2b303b;color:#b48ead;">AS </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">d:</span><span style="background-color:#2b303b;color:#96b5b4;">\t</span><span style="background-color:#2b303b;color:#a3be8c;">emp</span><span style="background-color:#2b303b;color:#96b5b4;">\d</span><span style="background-color:#2b303b;color:#a3be8c;">evtest</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;; </span><span style="background-color:#2b303b;color:#65737e;">-- Un*x 
+</span><span style="background-color:#2b303b;color:#b48ead;">SET</span><span style="background-color:#2b303b;color:#c0c5ce;"> SERVEROUTPUT </span><span style="background-color:#2b303b;color:#b48ead;">ON
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">DECLARE
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">l_blob    BLOB;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">l_props   </span><span style="background-color:#2b303b;color:#d08770;">ooxml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">t_xlsx_properties</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#b48ead;">BEGIN
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#d08770;">debug_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">debug_on</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">l_blob := </span><span style="background-color:#2b303b;color:#d08770;">file_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">get_blob_from_file</span><span style="background-color:#2b303b;color:#c0c5ce;">(&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">DEVTEST_TEMP_DIR</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;,&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">hello_excel.xlsx</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">l_props := </span><span style="background-color:#2b303b;color:#d08770;">ooxml_util_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">get_xlsx_properties</span><span style="background-color:#2b303b;color:#c0c5ce;">(l_blob);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#d08770;">debug_pkg</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">printf</span><span style="background-color:#2b303b;color:#c0c5ce;">(
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;</span><span style="background-color:#2b303b;color:#a3be8c;">title = %1,modified = %2,creator = %3,application = %4</span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">l_props</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">core</span><span style="background-color:#2b303b;color:#c0c5ce;">.title,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">l_props</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">core</span><span style="background-color:#2b303b;color:#c0c5ce;">.modified_date,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">l_props</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">core</span><span style="background-color:#2b303b;color:#c0c5ce;">.creator,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">        </span><span style="background-color:#2b303b;color:#d08770;">l_props</span><span style="background-color:#2b303b;color:#c0c5ce;">.</span><span style="background-color:#2b303b;color:#d08770;">app</span><span style="background-color:#2b303b;color:#c0c5ce;">.application
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#b48ead;">END</span><span style="background-color:#2b303b;color:#c0c5ce;">;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">/
+</span></pre>
+    </article>
+    <br /><br />
+    <a href="https://twitter.com/share" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>
